@@ -4,11 +4,9 @@
 
 `AmberFeedEffect` is the first prototype of a useful information screensaver. It presents rotating feed-style messages on a dark amber retro terminal screen inspired by 1980s monochrome monitors and teletext-like information pages.
 
-V0.4.1 keeps the strong retro look from V0.4.0 and adds the first real configuration step: the effect can now load and validate RSS/Atom source definitions from `config/feeds.json`.
+V0.4.3 keeps the strong retro look, loads RSS/Atom source definitions from `config/feeds.json`, refreshes live feed items in the background and falls back to cached or demo messages when feeds are unavailable.
 
-The application still does **not** download live RSS/Atom items. This is intentional. Configuration loading, live network retrieval, caching and timeout handling are separate concerns and should be implemented in small, safe steps.
-
-## Current status in V0.4.1
+## Current status in V0.4.3
 
 Implemented:
 
@@ -21,17 +19,20 @@ Implemented:
 - blinking cursor
 - command-line selection via `/effect:amber-feed`, `/amber` or `/feed`
 - loading and validating `config/feeds.json`
-- previewing configured RSS/Atom sources as terminal status items
-- fallback demo messages when no usable configuration is available
+- timeout-safe background RSS/Atom retrieval
+- basic RSS `item` parsing
+- basic Atom `entry` parsing
+- local cache fallback
+- demo fallback messages when no usable configuration, cache or live feed is available
 - custom feed configuration path via `/feeds:<path>`
+- configurable terminal timing via `itemsPerPage`, `pageDurationSeconds` and `characterRevealRate`
 
-Not implemented yet:
+Still intentionally simple:
 
-- downloading real RSS/Atom feed items
-- feed cache
-- network timeout handling
-- configurable themes beyond the current amber palette
-- per-feed filtering or prioritization
+- no graphical feed editor yet
+- no per-feed priority, include/exclude keywords or categories yet
+- no recurring timed refresh loop yet; V0.4.3 performs an initial background refresh
+- no configurable themes beyond the current amber palette
 
 ## Configuration file
 
@@ -47,7 +48,11 @@ Example:
 {
   "refreshMinutes": 15,
   "maxItemsPerFeed": 10,
+  "requestTimeoutSeconds": 5,
   "useDemoItemsWhenOffline": true,
+  "itemsPerPage": 3,
+  "pageDurationSeconds": 28,
+  "characterRevealRate": 28,
   "theme": "amber",
   "feeds": [
     {
@@ -64,7 +69,49 @@ Example:
 }
 ```
 
-V0.4.1 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not shown in the terminal preview.
+V0.4.3 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not retrieved.
+
+## Reading speed
+
+Amber Feed is intended to be readable from a distance, not just visually busy. V0.4.3 therefore reads display timing from `config/feeds.json`:
+
+```json
+{
+  "itemsPerPage": 3,
+  "pageDurationSeconds": 28,
+  "characterRevealRate": 28
+}
+```
+
+Meaning:
+
+```text
+itemsPerPage          How many feed items appear on one terminal page.
+pageDurationSeconds  How long one page stays visible before switching.
+characterRevealRate  How many characters are revealed per second.
+```
+
+Good starting points:
+
+```text
+Calm reading:    itemsPerPage=3, pageDurationSeconds=28, characterRevealRate=28
+Very slow:       itemsPerPage=2, pageDurationSeconds=40, characterRevealRate=18
+Faster demo:     itemsPerPage=4, pageDurationSeconds=16, characterRevealRate=48
+```
+
+The effect clamps unreasonable values at runtime, so an accidental extreme value should not crash rendering.
+
+## Cache
+
+Live feed items are stored in a small best-effort cache so the screensaver can still show useful information when the network is unavailable.
+
+Default cache path on Windows:
+
+```text
+%LOCALAPPDATA%\SASD\ScreenSaverLab\amber-feed-cache.json
+```
+
+The cache is not security-sensitive and should not contain credentials. It only stores already-public feed titles and short summaries.
 
 ## Command-line options
 
@@ -95,21 +142,28 @@ Supported aliases:
 
 ## Architecture
 
-The effect itself still does not download feeds. V0.4.1 adds only the configuration boundary:
+V0.4.3 keeps rendering, configuration loading, network retrieval and caching separate:
 
 ```text
 AmberFeedEffect
-  Renders terminal visuals and feed-style display items.
+  Renders terminal visuals.
+  Starts one background refresh after initialization.
+  Swaps displayed items when live, cached or fallback data becomes available.
 
 AmberFeedConfigurationLoader
   Reads and validates config/feeds.json.
-  Converts configured sources into preview display items.
+  Returns validated enabled HTTP/HTTPS feed sources.
 
-Future RssFeedService
-  Downloads RSS/Atom feeds with timeout handling.
+AmberFeedRssLoader
+  Downloads RSS/Atom feeds with short timeout handling.
+  Converts feed XML into display items.
 
-Future FeedCache
-  Stores recent items so the screensaver remains usable offline.
+AmberFeedXmlParser
+  Parses conservative RSS item and Atom entry structures.
+  Cleans HTML snippets and normalizes whitespace.
+
+AmberFeedCacheService
+  Stores and loads recent display items from local app data.
 ```
 
 This avoids a frozen or black screensaver when the network is unavailable or a feed endpoint is slow.

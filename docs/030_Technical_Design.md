@@ -167,25 +167,25 @@ The project should first become a small, stable, visually useful screensaver lab
 
 ## Amber Feed design note
 
-V0.4.1 keeps `AmberFeedEffect` as a non-networked renderer and adds JSON configuration loading for feed source definitions. It intentionally does not download real RSS feeds yet.
+V0.4.3 keeps `AmberFeedEffect` as the renderer and adds timeout-safe RSS/Atom retrieval in the effects layer. The effect starts immediately, displays cached/configuration/demo items first, and then swaps in live feed items after a background refresh succeeds.
 
-The current and planned production split is:
+V0.4.3 adds configurable Amber Feed timing through `config/feeds.json`. The rendering code resolves `itemsPerPage`, `pageDurationSeconds` and `characterRevealRate` once during effect construction and clamps unreasonable values so display configuration remains safe.
+
+The current split is:
 
 ```text
 Sasd.ScreenSaverLab.Effects
   AmberFeedEffect
     Draws feed-style items, scanlines, amber terminal frame and animation.
+    Starts a non-blocking initial feed refresh after initialization.
 
 Sasd.ScreenSaverLab.Effects.Feeds
   AmberFeedConfiguration
   AmberFeedConfigurationLoader
+  AmberFeedRssLoader
+  AmberFeedXmlParser
+  AmberFeedCacheService
   AmberFeedDisplayItem
-
-Future Sasd.ScreenSaverLab.Core or Infrastructure
-  FeedItem
-  IFeedService
-  RssFeedService
-  FeedCache
 ```
 
-The important design rule is that visual effects should not block on network I/O. A future feed service should load feeds asynchronously or ahead of time, apply timeouts, and provide cached items to the effect.
+The important design rule is that visual effects must not block the UI thread on network I/O. Feed retrieval uses short timeouts and best-effort cache/demo fallback so a slow or broken feed cannot freeze the screensaver.

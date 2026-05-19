@@ -80,28 +80,74 @@ Implemented:
 - `/light`, `/trails` and related aliases
 - command-line help and configuration documentation updated for three effects
 
+### V0.4.0 — Amber Feed visual prototype
+
+Implemented:
+
+- `AmberFeedEffect`
+- amber monochrome terminal look
+- scanlines, glow, typewriter reveal, page rotation and progress bar
+- demo feed items
+- command-line aliases `/effect:amber-feed`, `/amber` and `/feed`
+- initial `config/feeds.json` example file
+- dedicated Amber Feed design note
+
+### V0.4.1 — Feed configuration loading
+
+Implemented:
+
+- parse and validate `config/feeds.json`
+- accept custom feed configuration path with `/feeds:<path>`
+- show configured feed sources as Amber Feed terminal preview items
+- keep demo mode as safe fallback when no usable configuration is available
+- avoid live network I/O in the visual effect
+
+### V0.4.2 — RSS/Atom retrieval and cache
+
+Implemented:
+
+- download enabled RSS/Atom feeds with short timeouts
+- convert RSS `item` and Atom `entry` elements into display items
+- clean HTML fragments and normalize feed text
+- cache the last successful result in local app data
+- keep rendering cached or demo items when live retrieval fails
+- keep network access off the UI thread by refreshing in the background
+
+### V0.4.3 — Configurable Amber Feed reading speed
+
+Implemented:
+
+- configurable `itemsPerPage` in `config/feeds.json`
+- configurable `pageDurationSeconds` in `config/feeds.json`
+- configurable `characterRevealRate` in `config/feeds.json`
+- calmer default Amber Feed timing so pages stay readable longer
+- runtime clamping for unreasonable timing values
+- Amber Feed documentation updated with slow/calm/fast examples
+
 ## Next recommended versions
 
-### V0.3.1 — Small effect cleanup
+### V0.4.4 — Amber Feed refinement
 
 Possible improvements:
 
-- tune Data Stream speed and density after testing on a real monitor
-- tune Light Trails brightness, count and movement after testing on a real monitor
-- add screenshots for Data Stream and Light Trails
-- add parser tests once a test project exists
+- recurring timed refresh loop while the screensaver stays open for a long time
+- better status messages for failed feeds
+- optional maximum total item count
+- screenshots for Amber Feed with real feed content
+- small feed parser tests once a test project exists
 
-### V0.4 — Basic configuration dialog
+### V0.5 — Basic configuration dialog
 
 Add a simple Windows Forms dialog for:
 
 - selecting the built-in effect
 - showing/hiding the clock overlay
 - choosing monitor behavior
+- selecting or editing the Amber Feed configuration path
 
 The dialog does not need to be pretty at first. It should map to the existing options instead of inventing a second configuration model.
 
-### V0.5 — Real Windows `.scr` packaging
+### V0.6 — Real Windows `.scr` packaging
 
 Prepare the application so it can be copied or built as a Windows screensaver file.
 
@@ -133,49 +179,6 @@ The following ideas are intentionally deferred:
 - SkiaSharp/OpenGL backend
 - animated settings preview
 - asset-heavy aquarium-like effects
+- configurable terminal themes beyond the current amber palette
 
 These ideas are interesting, but they should not block a robust and understandable first version.
-
-
-### V0.4 — Amber Feed effect
-
-Status: implemented as V0.4.0 prototype.
-
-Goal: add a useful retro terminal-style feed display while keeping network access out of the rendering code for now.
-
-Implemented in V0.4.0:
-
-- `AmberFeedEffect`
-- amber monochrome terminal look
-- scanlines, glow, typewriter reveal, page rotation and progress bar
-- demo feed items
-- command-line aliases `/effect:amber-feed`, `/amber` and `/feed`
-- initial `config/feeds.json` example file
-- dedicated Amber Feed design note
-
-### V0.4.1 — Feed configuration loading
-
-Status: implemented.
-
-Implemented in V0.4.1:
-
-- parse and validate `config/feeds.json`
-- accept custom feed configuration path with `/feeds:<path>`
-- show configured feed sources as Amber Feed terminal preview items
-- keep demo mode as safe fallback when no usable configuration is available
-- avoid live network I/O in the visual effect
-
-Deferred:
-
-- RSS/Atom download service
-- cache and timeout handling
-- configurable terminal themes
-
-### V0.4.2 — RSS/Atom retrieval and cache
-
-Planned next step:
-
-- download feeds with timeouts
-- convert RSS/Atom entries into internal feed items
-- cache last successful result
-- keep rendering cached or demo items when offline

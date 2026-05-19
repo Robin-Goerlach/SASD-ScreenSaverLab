@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.4.1 prototype**
+Version: **V0.4.3 prototype**
 
 Implemented:
 
@@ -29,6 +29,7 @@ Implemented:
 - Optional power-management modes for keeping the system and/or display awake
 - Initial GitHub Actions build workflow
 - Initial project documentation
+- Timeout-safe RSS/Atom retrieval with cache/demo fallback for `AmberFeedEffect`
 
 Not yet implemented:
 
@@ -38,7 +39,6 @@ Not yet implemented:
 - Friendly configuration UI for monitor, overlay and effect selection
 - Audio-reactive visualizer mode
 - Plugin loading from external assemblies
-- Real RSS/Atom item retrieval and cache refresh for `AmberFeedEffect`
 
 ## Intended technology stack
 
@@ -96,7 +96,7 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.4.1 contains four built-in effects:
+V0.4.3 contains four built-in effects:
 
 - `star-drift`
 - `data-stream`
@@ -123,7 +123,7 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /light
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /trails
 
-# Amber Feed retro terminal effect. It reads config/feeds.json and previews configured feed sources.
+# Amber Feed retro terminal effect. It reads config/feeds.json and refreshes RSS/Atom in the background.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:amber-feed
 
 # Short aliases for Amber Feed.
@@ -133,15 +133,33 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
 
-### Amber Feed configuration preview
+### Amber Feed RSS/Atom configuration
 
-V0.4.1 adds the first real configuration step for `AmberFeedEffect`. The effect now tries to load and validate RSS/Atom source definitions from:
+V0.4.3 loads RSS/Atom source definitions from:
 
 ```text
 config/feeds.json
 ```
 
-The configured sources are shown as preview/status items in the amber retro terminal. The application does **not** download live RSS/Atom content yet. Real feed retrieval, cache handling and timeout-safe refreshes are planned for the next Amber Feed iteration.
+The effect starts immediately with cached items, configured-source preview items or demo fallback messages. It then refreshes enabled RSS/Atom feeds in the background with a short timeout. If live retrieval fails, the terminal keeps rendering and falls back to the local cache or demo items.
+
+V0.4.3 also makes the Amber Feed reading speed configurable in `config/feeds.json`:
+
+```json
+{
+  "itemsPerPage": 3,
+  "pageDurationSeconds": 28,
+  "characterRevealRate": 28
+}
+```
+
+Use a higher `pageDurationSeconds` value to keep pages visible longer and a lower `characterRevealRate` value to reveal text more slowly.
+
+The cache is stored in the current user's local application-data folder, typically:
+
+```text
+%LOCALAPPDATA%\SASD\ScreenSaverLab\amber-feed-cache.json
+```
 
 You can also select a custom feed configuration file:
 
@@ -246,7 +264,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.4.1 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.4.3 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

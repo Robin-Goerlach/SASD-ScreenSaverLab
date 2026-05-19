@@ -6,10 +6,9 @@ namespace Sasd.ScreenSaverLab.Effects.Feeds;
 /// Loads and validates the Amber Feed JSON configuration file.
 /// </summary>
 /// <remarks>
-/// The loader deliberately does not retrieve RSS/Atom content yet. V0.4.1 proves that
-/// the configuration file can be found, parsed and represented in the visual effect.
-/// Network access, caching, timeout handling and malformed feed recovery remain separate
-/// follow-up steps.
+/// The loader is responsible for file-system access and basic validation only. Live
+/// RSS/Atom retrieval is handled by <see cref="AmberFeedRssLoader" /> so configuration
+/// loading, network access and rendering remain separate concerns.
 /// </remarks>
 public static class AmberFeedConfigurationLoader
 {
@@ -26,7 +25,7 @@ public static class AmberFeedConfigurationLoader
     };
 
     /// <summary>
-    /// Loads the configured feed sources and converts them into displayable placeholder items.
+    /// Loads the configured feed sources and converts them into safe startup display items.
     /// </summary>
     /// <param name="configurationPath">Optional path to the JSON configuration file.</param>
     /// <returns>A load result that is safe to use by the visual effect.</returns>
@@ -71,13 +70,14 @@ public static class AmberFeedConfigurationLoader
     }
 
     /// <summary>
-    /// Converts a parsed configuration file into placeholder display items.
+    /// Converts a parsed configuration file into validated feed sources and startup messages.
     /// </summary>
     private static AmberFeedConfigurationResult BuildResult(AmberFeedConfiguration configuration, string resolvedPath)
     {
         List<AmberFeedSourceConfiguration> configuredFeeds = configuration.Feeds ?? [];
         int configuredCount = configuredFeeds.Count;
         List<AmberFeedDisplayItem> items = [];
+        List<AmberFeedSourceConfiguration> enabledFeeds = [];
         List<string> warnings = [];
 
         foreach (AmberFeedSourceConfiguration feed in configuredFeeds)
@@ -96,13 +96,20 @@ public static class AmberFeedConfigurationLoader
                 continue;
             }
 
+            enabledFeeds.Add(new AmberFeedSourceConfiguration
+            {
+                Name = name,
+                Url = url,
+                Enabled = true
+            });
+
             items.Add(new AmberFeedDisplayItem(
                 name,
                 "RSS source configured",
-                $"{url} // refresh target {Math.Max(1, configuration.RefreshMinutes)} min // max {Math.Max(1, configuration.MaxItemsPerFeed)} items // retrieval planned for V0.4.2"));
+                $"{url} // refresh {NormalizeRefreshMinutes(configuration.RefreshMinutes)} min // max {NormalizeMaxItems(configuration.MaxItemsPerFeed)} items // live retrieval starts in background"));
         }
 
-        string status = $"CONFIG LOADED  //  {items.Count}/{configuredCount} SOURCES ENABLED  //  {ShortenPath(resolvedPath)}";
+        string status = $"CONFIG LOADED  //  {enabledFeeds.Count}/{configuredCount} SOURCES ENABLED  //  {ShortenPath(resolvedPath)}";
 
         if (warnings.Count > 0)
         {
@@ -119,7 +126,13 @@ public static class AmberFeedConfigurationLoader
             status += "  //  DEMO FALLBACK";
         }
 
-        return new AmberFeedConfigurationResult(items, status, LoadedFromConfiguration: true);
+        return new AmberFeedConfigurationResult(
+            items,
+            status,
+            LoadedFromConfiguration: true,
+            Configuration: configuration,
+            EnabledFeeds: enabledFeeds,
+            ResolvedConfigurationPath: resolvedPath);
     }
 
     /// <summary>
@@ -129,6 +142,22 @@ public static class AmberFeedConfigurationLoader
     {
         return Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
             && (parsed.Scheme == Uri.UriSchemeHttp || parsed.Scheme == Uri.UriSchemeHttps);
+    }
+
+    /// <summary>
+    /// Keeps refresh intervals inside a conservative, useful range.
+    /// </summary>
+    private static int NormalizeRefreshMinutes(int refreshMinutes)
+    {
+        return Math.Clamp(refreshMinutes, 1, 1440);
+    }
+
+    /// <summary>
+    /// Keeps per-feed item counts inside a reasonable UI/cache range.
+    /// </summary>
+    private static int NormalizeMaxItems(int maxItemsPerFeed)
+    {
+        return Math.Clamp(maxItemsPerFeed, 1, 50);
     }
 
     /// <summary>

@@ -95,9 +95,9 @@ EFFECTS
         Soft glowing light trails moving across a calm visualizer field.
 
     amber-feed
-        Amber retro terminal feed display. V0.4.1 loads and validates
-        configured RSS source definitions from config/feeds.json, but does
-        not download live RSS/Atom items yet.
+        Amber retro terminal feed display. V0.4.3 loads and validates
+        configured RSS/Atom source definitions from config/feeds.json,
+        refreshes live items in the background and falls back to cache or demo items.
 
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
@@ -121,7 +121,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.4.1
+    0.4.3
 
 AUTHOR
     SASD - Scientific and Software Development

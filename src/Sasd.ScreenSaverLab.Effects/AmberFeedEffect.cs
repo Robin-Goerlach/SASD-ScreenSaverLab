@@ -9,16 +9,15 @@ namespace Sasd.ScreenSaverLab.Effects;
 /// Displays rotating feed-style items in a warm amber retro-terminal style.
 /// </summary>
 /// <remarks>
-/// Amber Feed is the first stage of the planned RSS-capable screensaver effect. V0.4.1
-/// can load and validate <c>config/feeds.json</c>, but deliberately still avoids live
-/// network access. Real RSS retrieval, caching and timeout handling are planned for the
-/// next iterations.
+/// Amber Feed can load <c>config/feeds.json</c>, show configured sources immediately and
+/// then refresh live RSS/Atom items in the background. Network failures are non-fatal:
+/// the effect falls back to cached or demo items so the animation remains stable.
 /// </remarks>
 public sealed class AmberFeedEffect : IScreenSaverEffect
 {
-    private const float PageDurationSeconds = 11.5f;
-    private const float CharacterRevealRate = 46f;
-    private const int ItemsPerPage = 4;
+    private const float DefaultPageDurationSeconds = 28f;
+    private const float DefaultCharacterRevealRate = 28f;
+    private const int DefaultItemsPerPage = 3;
 
     private static readonly Color BackgroundColor = Color.FromArgb(255, 3, 2, 0);
     private static readonly Color DarkAmberColor = Color.FromArgb(255, 82, 47, 0);
@@ -27,8 +26,16 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     private static readonly Color DimAmberColor = Color.FromArgb(255, 155, 91, 12);
 
     private readonly Random _random = new();
-    private readonly List<FeedItem> _items;
-    private readonly string _statusLine;
+    private readonly object _itemSync = new();
+    private readonly AmberFeedConfigurationResult _configurationResult;
+    private readonly CancellationTokenSource _feedRefreshCancellation = new();
+    private readonly float _pageDurationSeconds;
+    private readonly float _characterRevealRate;
+    private readonly int _itemsPerPage;
+
+    private List<FeedItem> _items;
+    private string _statusLine;
+    private bool _feedRefreshStarted;
 
     private float _elapsedOnPage;
     private float _totalElapsed;
@@ -62,18 +69,37 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     {
         ArgumentNullException.ThrowIfNull(configurationResult);
 
-        _items = configurationResult.Items.Count > 0
-            ? configurationResult.Items.Select(item => new FeedItem(item.Source, item.Title, item.Summary)).ToList()
-            : CreateDemoItems();
+        _configurationResult = configurationResult;
+        _pageDurationSeconds = ResolvePageDurationSeconds(configurationResult.Configuration);
+        _characterRevealRate = ResolveCharacterRevealRate(configurationResult.Configuration);
+        _itemsPerPage = ResolveItemsPerPage(configurationResult.Configuration);
 
-        _statusLine = configurationResult.StatusLine;
+        IReadOnlyList<AmberFeedDisplayItem> cachedItems = configurationResult.HasEnabledFeeds
+            ? AmberFeedCacheService.LoadItems()
+            : [];
+
+        if (cachedItems.Count > 0)
+        {
+            _items = ConvertDisplayItems(cachedItems);
+            _statusLine = $"CACHE LOADED  //  {cachedItems.Count} ITEMS  //  RSS REFRESH STARTING";
+        }
+        else
+        {
+            _items = configurationResult.Items.Count > 0
+                ? ConvertDisplayItems(configurationResult.Items)
+                : CreateDemoItems();
+
+            _statusLine = configurationResult.HasEnabledFeeds
+                ? $"{configurationResult.StatusLine}  //  RSS REFRESH STARTING"
+                : configurationResult.StatusLine;
+        }
     }
 
     /// <inheritdoc />
     public string Name => "Amber Feed";
 
     /// <inheritdoc />
-    public string Description => "Amber retro terminal feed display with configured RSS source preview and teletext-like motion.";
+    public string Description => "Amber retro terminal feed display with timeout-safe RSS/Atom retrieval and teletext-like motion.";
 
     /// <inheritdoc />
     public void Initialize(Size viewportSize)
@@ -83,6 +109,8 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         _pageIndex = 0;
         _visibleCharacters = 0;
         _flicker = 0f;
+
+        StartFeedRefreshIfNeeded();
     }
 
     /// <inheritdoc />
@@ -94,14 +122,14 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         _totalElapsed += seconds;
         _flicker = 0.5f + RandomRange(-0.08f, 0.08f);
 
-        if (_elapsedOnPage >= PageDurationSeconds)
+        if (_elapsedOnPage >= _pageDurationSeconds)
         {
             _elapsedOnPage = 0f;
             _visibleCharacters = 0;
             _pageIndex = (_pageIndex + 1) % CalculatePageCount();
         }
 
-        _visibleCharacters = Math.Max(_visibleCharacters, (int)(_elapsedOnPage * CharacterRevealRate));
+        _visibleCharacters = Math.Max(_visibleCharacters, (int)(_elapsedOnPage * _characterRevealRate));
     }
 
     /// <inheritdoc />
@@ -224,7 +252,8 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         using Brush darkBrush = new SolidBrush(ColorWithFlicker(DarkAmberColor, 165));
 
         string header = $"SASD AMBER FEED TERMINAL  //  PAGE {101 + _pageIndex:D3}";
-        string status = $"{_statusLine}  //  {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+        string statusLine = GetStatusLineSnapshot();
+        string status = $"{statusLine}  //  {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
 
         graphics.DrawString(header, headerFont, brightBrush, terminalBounds.X + 28f, terminalBounds.Y + 20f);
         graphics.DrawString(status, footerFont, dimBrush, terminalBounds.X + 28f, terminalBounds.Bottom - 31f);
@@ -270,7 +299,7 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     /// </summary>
     private void DrawPageProgress(Graphics graphics, RectangleF terminalBounds, Brush dimBrush, Brush amberBrush)
     {
-        float progress = Math.Clamp(_elapsedOnPage / PageDurationSeconds, 0f, 1f);
+        float progress = Math.Clamp(_elapsedOnPage / _pageDurationSeconds, 0f, 1f);
         float barX = terminalBounds.X + 28f;
         float barY = terminalBounds.Bottom - 61f;
         float barWidth = terminalBounds.Width - 56f;
@@ -378,16 +407,160 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     /// </summary>
     private List<FeedItem> GetCurrentPageItems()
     {
-        int startIndex = _pageIndex * ItemsPerPage;
-        return _items.Skip(startIndex).Take(ItemsPerPage).ToList();
+        lock (_itemSync)
+        {
+            int startIndex = _pageIndex * _itemsPerPage;
+            return _items.Skip(startIndex).Take(_itemsPerPage).ToList();
+        }
     }
 
     /// <summary>
-    /// Calculates how many pages are needed for the built-in demo items.
+    /// Calculates how many pages are needed for the current feed item list.
     /// </summary>
     private int CalculatePageCount()
     {
-        return Math.Max(1, (int)Math.Ceiling(_items.Count / (double)ItemsPerPage));
+        lock (_itemSync)
+        {
+            return Math.Max(1, (int)Math.Ceiling(_items.Count / (double)_itemsPerPage));
+        }
+    }
+
+    /// <summary>
+    /// Returns the current terminal status line without exposing mutable state to rendering.
+    /// </summary>
+    private string GetStatusLineSnapshot()
+    {
+        lock (_itemSync)
+        {
+            return _statusLine;
+        }
+    }
+
+    /// <summary>
+    /// Starts the background RSS/Atom refresh once the effect has been initialized.
+    /// </summary>
+    private void StartFeedRefreshIfNeeded()
+    {
+        if (_feedRefreshStarted || !_configurationResult.HasEnabledFeeds)
+        {
+            return;
+        }
+
+        _feedRefreshStarted = true;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                AmberFeedRetrievalResult retrievalResult = await AmberFeedRssLoader.LoadAsync(
+                    _configurationResult,
+                    _feedRefreshCancellation.Token).ConfigureAwait(false);
+
+                if (retrievalResult.Items.Count > 0)
+                {
+                    ReplaceItems(retrievalResult.Items, retrievalResult.StatusLine);
+                    return;
+                }
+
+                IReadOnlyList<AmberFeedDisplayItem> cachedItems = AmberFeedCacheService.LoadItems();
+
+                if (cachedItems.Count > 0)
+                {
+                    ReplaceItems(cachedItems, $"CACHE FALLBACK  //  {cachedItems.Count} ITEMS  //  RSS UNAVAILABLE");
+                    return;
+                }
+
+                if (_configurationResult.Configuration?.UseDemoItemsWhenOffline != false)
+                {
+                    ReplaceItems(ConvertFeedItems(CreateDemoItems()), $"DEMO FALLBACK  //  {retrievalResult.StatusLine}");
+                    return;
+                }
+
+                UpdateStatusLine(retrievalResult.StatusLine);
+            }
+            catch (OperationCanceledException)
+            {
+                // The form is closing. No UI update is required.
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLine($"RSS ERROR  //  {ex.GetType().Name}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Replaces the visible feed items and restarts the page animation from the beginning.
+    /// </summary>
+    private void ReplaceItems(IReadOnlyList<AmberFeedDisplayItem> items, string statusLine)
+    {
+        lock (_itemSync)
+        {
+            _items = ConvertDisplayItems(items);
+            _statusLine = statusLine;
+            _pageIndex = 0;
+            _elapsedOnPage = 0f;
+            _visibleCharacters = 0;
+        }
+    }
+
+    /// <summary>
+    /// Updates the status line while keeping the existing items visible.
+    /// </summary>
+    private void UpdateStatusLine(string statusLine)
+    {
+        lock (_itemSync)
+        {
+            _statusLine = statusLine;
+        }
+    }
+
+    /// <summary>
+    /// Resolves the configured page duration while keeping the screensaver readable and safe.
+    /// </summary>
+    private static float ResolvePageDurationSeconds(AmberFeedConfiguration? configuration)
+    {
+        double configuredValue = configuration?.PageDurationSeconds ?? DefaultPageDurationSeconds;
+        return (float)Math.Clamp(configuredValue, 8.0, 120.0);
+    }
+
+    /// <summary>
+    /// Resolves the configured typewriter speed. Lower values keep feed text visible longer.
+    /// </summary>
+    private static float ResolveCharacterRevealRate(AmberFeedConfiguration? configuration)
+    {
+        double configuredValue = configuration?.CharacterRevealRate ?? DefaultCharacterRevealRate;
+        return (float)Math.Clamp(configuredValue, 5.0, 120.0);
+    }
+
+    /// <summary>
+    /// Resolves the configured page density. Fewer items per page are easier to read.
+    /// </summary>
+    private static int ResolveItemsPerPage(AmberFeedConfiguration? configuration)
+    {
+        int configuredValue = configuration?.ItemsPerPage ?? DefaultItemsPerPage;
+        return Math.Clamp(configuredValue, 1, 6);
+    }
+
+    /// <summary>
+    /// Converts display records used by the feed layer into the internal render record.
+    /// </summary>
+    private static List<FeedItem> ConvertDisplayItems(IEnumerable<AmberFeedDisplayItem> items)
+    {
+        return items
+            .Where(item => !string.IsNullOrWhiteSpace(item.Title))
+            .Select(item => new FeedItem(item.Source, item.Title, item.Summary))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Converts internal demo records back into display records for shared fallback logic.
+    /// </summary>
+    private static List<AmberFeedDisplayItem> ConvertFeedItems(IEnumerable<FeedItem> items)
+    {
+        return items
+            .Select(item => new AmberFeedDisplayItem(item.Source, item.Title, item.Summary))
+            .ToList();
     }
 
     /// <summary>

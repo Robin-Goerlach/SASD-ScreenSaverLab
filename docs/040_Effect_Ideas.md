@@ -76,4 +76,4 @@ Avoid names that sound like direct copies of commercial screensavers or media fr
 
 A useful retro-terminal information display. The effect uses a dark amber monochrome look, scanlines, terminal frame, typewriter-style text reveal and rotating feed pages.
 
-V0.4.1 reads RSS/Atom source definitions from `config/feeds.json` and shows them as preview items. Later versions should download and cache real feed entries while still falling back to cached or demo messages when offline.
+V0.4.3 reads RSS/Atom source definitions from `config/feeds.json`, downloads live entries in the background and caches recent items while still falling back to demo messages when offline. V0.4.3 also makes the reading speed configurable, so the terminal can be slowed down for real reading instead of behaving like a pure visual animation.

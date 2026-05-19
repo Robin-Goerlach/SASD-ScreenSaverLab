@@ -1,7 +1,11 @@
 {
   "refreshMinutes": 15,
   "maxItemsPerFeed": 10,
+  "requestTimeoutSeconds": 5,
   "useDemoItemsWhenOffline": true,
+  "itemsPerPage": 3,
+  "pageDurationSeconds": 28,
+  "characterRevealRate": 28,
   "theme": "amber",
   "feeds": [
     {
