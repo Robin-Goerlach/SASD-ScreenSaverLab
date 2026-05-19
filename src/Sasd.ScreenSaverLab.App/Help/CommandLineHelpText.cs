@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using Sasd.ScreenSaverLab.Effects;
 
 namespace Sasd.ScreenSaverLab.App;
 
@@ -40,6 +41,46 @@ public static class CommandLineHelpText
     }
 
     /// <summary>
+    /// Displays the built-in effect list and also writes it to standard output when available.
+    /// </summary>
+    public static void ShowEffectList()
+    {
+        string text = BuildEffectList();
+
+        try
+        {
+            Console.WriteLine(text);
+        }
+        catch (IOException)
+        {
+            // GUI applications do not always have a usable stdout stream.
+        }
+
+        MessageBox.Show(
+            text,
+            "SASD ScreenSaver Lab - Effects",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
+    }
+
+    /// <summary>
+    /// Builds a compact list of built-in effects and aliases.
+    /// </summary>
+    public static string BuildEffectList()
+    {
+        return $"""
+SASD ScreenSaver Lab - Built-in Effects
+
+{BuiltInScreenSaverEffects.GetDetailedEffectsText()}
+
+Examples:
+    Sasd.ScreenSaverLab.App.exe /lab /no-clock
+    Sasd.ScreenSaverLab.App.exe /pulse /no-clock
+    Sasd.ScreenSaverLab.App.exe /effect:system-pulse /no-clock
+""";
+    }
+
+    /// <summary>
     /// Builds the manpage-like help text.
     /// </summary>
     public static string Build()
@@ -58,11 +99,14 @@ DESCRIPTION
     visualizer playground for Windows.
 
     It provides a modular fullscreen host for original animated effects,
-    currently Star Drift, Data Stream, Light Trails, Amber Feed, Wireframe Terrain, Plasma Grid and Orbit Field.
+    currently Star Drift, Data Stream, Light Trails, Amber Feed, Wireframe Terrain, Plasma Grid, Orbit Field, Lab Console and System Pulse.
 
 OPTIONS
     /help, /?, -h, --help
         Show this help text and exit.
+
+    /list-effects, /effects, /effect-list
+        Show all built-in effect names and aliases, then exit.
 
     /mouse
         Start on the screen where the mouse cursor is currently located.
@@ -91,6 +135,8 @@ OPTIONS
             wireframe-terrain
             plasma-grid
             orbit-field
+            lab-console
+            system-pulse
 
     /star
         Shortcut for /effect:star-drift.
@@ -112,6 +158,12 @@ OPTIONS
 
     /orbit, /field
         Shortcuts for /effect:orbit-field.
+
+    /lab, /console
+        Shortcuts for /effect:lab-console.
+
+    /pulse, /system
+        Shortcuts for /effect:system-pulse.
 
     /clock, /clock:on, /clock:true, /show-clock
         Show the clock/date/effect-name overlay. This is the default.
@@ -151,7 +203,7 @@ EFFECTS
         Soft glowing light trails moving across a calm visualizer field.
 
     amber-feed
-        Amber retro terminal feed display. V0.5.0 loads configured RSS/Atom
+        Amber retro terminal feed display. The effect loads configured RSS/Atom
         sources, refreshes them in the background and falls back to cache or
         demo items when sources are unavailable. Reading speed is configured
         in config/feeds.json.
@@ -164,6 +216,14 @@ EFFECTS
 
     orbit-field
         Scientific particle-orbit effect with soft attractor field lines.
+
+    lab-console
+        Fictional laboratory and research-data console with sample rows,
+        signal traces and event messages. Uses generated demonstration data.
+
+    system-pulse
+        Abstract local CPU, RAM and network telemetry visualization with
+        pulse rings, metric cards and sparkline histories.
 
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
@@ -184,6 +244,10 @@ EXAMPLES
 
     Sasd.ScreenSaverLab.App.exe /orbit /no-clock
 
+    Sasd.ScreenSaverLab.App.exe /lab /no-clock
+
+    Sasd.ScreenSaverLab.App.exe /pulse /no-clock
+
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
     Sasd.ScreenSaverLab.App.exe /stream /no-clock /keep-display-awake
@@ -193,7 +257,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.5.0
+    0.6.1
 
 AUTHOR
     SASD - Scientific and Software Development

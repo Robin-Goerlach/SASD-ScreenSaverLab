@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.5.0 prototype**
+Version: **V0.6.1 prototype**
 
 Implemented:
 
@@ -22,6 +22,8 @@ Implemented:
 - `WireframeTerrainEffect`
 - `PlasmaGridEffect`
 - `OrbitFieldEffect`
+- `LabConsoleEffect`
+- `SystemPulseEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
@@ -72,6 +74,7 @@ SASD-ScreenSaverLab/
     080_Power_Management.md
     090_Amber_Feed.md
     100_V050_Effect_Expansion.md
+    110_V060_Lab_And_System_Effects.md
     screenshots/
       sasd-screensaverlab-star-drift.png
   config/
@@ -102,7 +105,7 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.5.0 contains seven built-in effects:
+V0.6.1 contains nine built-in effects:
 
 - `star-drift`
 - `data-stream`
@@ -111,6 +114,8 @@ V0.5.0 contains seven built-in effects:
 - `wireframe-terrain`
 - `plasma-grid`
 - `orbit-field`
+- `lab-console`
+- `system-pulse`
 
 Useful examples:
 
@@ -159,13 +164,27 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 # Short aliases for Orbit Field.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /orbit
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /field
+
+# Lab Console effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:lab-console
+
+# Short aliases for Lab Console.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /lab
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /console
+
+# System Pulse effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:system-pulse
+
+# Short aliases for System Pulse.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /pulse
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /system
 ```
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
 
 ### Amber Feed RSS/Atom configuration
 
-V0.5.0 loads RSS/Atom source definitions from:
+V0.5.1 loads RSS/Atom source definitions from:
 
 ```text
 config/feeds.json
@@ -173,7 +192,7 @@ config/feeds.json
 
 The effect starts immediately with cached items, configured-source preview items or demo fallback messages. It then refreshes enabled RSS/Atom feeds in the background with a short timeout. If live retrieval fails, the terminal keeps rendering and falls back to the local cache or demo items.
 
-V0.5.0 also keeps the Amber Feed reading speed and page density configurable in `config/feeds.json`:
+V0.5.1 also keeps the Amber Feed reading speed and page density configurable in `config/feeds.json`:
 
 ```json
 {
@@ -232,6 +251,9 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 # Orbit Field on all monitors without clock overlay.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /orbit /no-clock
+
+# System Pulse on all monitors without clock overlay.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /pulse /no-clock
 ```
 
 For the later real Windows screensaver mode (`/s`), the application is prepared to cover all connected monitors.
@@ -300,7 +322,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.5.0 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.6.1 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 
@@ -319,3 +341,28 @@ csharp dotnet windows-forms screensaver visualizer graphics animation sasd
 ```
 
 See [`docs/050_GitHub_Repository_Setup.md`](docs/050_GitHub_Repository_Setup.md) for suggested GitHub setup commands.
+
+### V0.5.1 Terrain horizon polish
+
+`WireframeTerrainEffect` now clips the retro sun to the sky area and places it slightly higher above the horizon. This avoids the lower part of the sun being visible inside the terrain grid on some monitor sizes.
+
+### V0.6.0 Lab and system effects
+
+`LabConsoleEffect` adds a fictional research-data console with generated sample rows, signal traces and event log output.
+
+`SystemPulseEffect` adds an abstract local CPU/RAM/network visualization with pulse rings, metric cards and sparkline histories.
+
+Useful examples:
+
+```powershell
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /lab /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /pulse /no-clock
+```
+
+### V0.6.1 Effect alias selection fix
+
+V0.6.1 improves effect selection for direct shortcuts such as `/lab` and `/pulse`.
+The application now resolves aliases through the built-in effect registry before starting
+the fullscreen host. A new `/list-effects` command shows all supported canonical names
+and aliases.

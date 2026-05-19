@@ -15,16 +15,34 @@ internal static class Program
 
         ScreenSaverStartupOptions options = ScreenSaverCommandLineParser.Parse(args);
 
+        // V0.6.1 deliberately resolves the selected effect a second time through the
+        // concrete built-in effect registry. This keeps direct shortcuts such as /lab
+        // and /pulse robust even while the command-line parser and effect factory evolve.
+        if (BuiltInScreenSaverEffects.TryResolveFromArguments(args, out string canonicalEffectName))
+        {
+            options = options with { EffectName = canonicalEffectName };
+        }
+        else
+        {
+            options = options with { EffectName = BuiltInScreenSaverEffects.ResolveCanonicalName(options.EffectName) };
+        }
+
         if (options.ShowHelp)
         {
             CommandLineHelpText.Show();
             return;
         }
 
+        if (options.ShowEffectList)
+        {
+            CommandLineHelpText.ShowEffectList();
+            return;
+        }
+
         if (options.Mode == ScreenSaverMode.Configure)
         {
             MessageBox.Show(
-                $"SASD ScreenSaver Lab V0.5.0\n\nA graphical configuration dialog will be added in a later version.\n\nFor now, use command-line options such as /clock, /no-clock, /effect:star-drift, /effect:data-stream, /effect:light-trails, /effect:amber-feed, /effect:wireframe-terrain, /effect:plasma-grid or /effect:orbit-field. For Amber Feed, /feeds:config/feeds.json can select a feed configuration file.\n\nRun with /help to show the command-line reference.\n\nSupported effects: {BuiltInScreenSaverEffects.GetSupportedEffectsText()}",
+                $"SASD ScreenSaver Lab V0.6.1\n\nA graphical configuration dialog will be added in a later version.\n\nFor now, use command-line options such as /clock, /no-clock, /effect:star-drift, /effect:data-stream, /effect:light-trails, /effect:amber-feed, /effect:wireframe-terrain, /effect:plasma-grid, /effect:orbit-field, /effect:lab-console or /effect:system-pulse. For Amber Feed, /feeds:config/feeds.json can select a feed configuration file.\n\nRun with /help to show the command-line reference or /list-effects to show supported effect aliases.\n\nSupported effects: {BuiltInScreenSaverEffects.GetSupportedEffectsText()}",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -34,7 +52,7 @@ internal static class Program
         if (options.Mode == ScreenSaverMode.Preview)
         {
             MessageBox.Show(
-                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.5.0 prototype.",
+                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.6.1 prototype.",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

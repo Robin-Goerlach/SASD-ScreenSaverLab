@@ -107,3 +107,23 @@ Purpose:
 - strengthen the scientific/SASD visual identity,
 - provide a calm effect that looks closer to a simulation or laboratory display,
 - prepare later ideas such as magnet-field or particle-system effects.
+
+### Lab Console
+
+A fictional laboratory and research-data console with sample IDs, assay types, signal traces, quality/status values and a small event log.
+
+Purpose:
+
+- strengthen the scientific identity of the SASD ScreenSaver Lab,
+- provide a visually useful research-console effect without connecting to real lab data,
+- prepare later ideas such as configurable local data sources or SASD project status feeds.
+
+### System Pulse
+
+An abstract local system telemetry screensaver with CPU, memory and network activity rendered as pulse rings, metric cards and sparklines.
+
+Purpose:
+
+- add a practical system-themed effect,
+- make a screen look alive during demos or workstation idle time,
+- create a foundation for later system-monitor dashboard ideas without turning the screensaver into a full monitoring product.

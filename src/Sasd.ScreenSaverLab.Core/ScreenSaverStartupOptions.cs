@@ -39,6 +39,10 @@ namespace Sasd.ScreenSaverLab.Core;
 /// <param name="AmberFeedConfigurationPath">
 /// Path to the Amber Feed JSON configuration file. The default is <c>config/feeds.json</c>.
 /// </param>
+/// <param name="ShowEffectList">
+/// When true, the application displays the built-in effect list and exits without
+/// starting a screensaver window.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
@@ -50,7 +54,8 @@ public sealed record ScreenSaverStartupOptions(
     string EffectName = "star-drift",
     bool ShowHelp = false,
     PowerManagementMode PowerManagementMode = PowerManagementMode.AllowSleep,
-    string AmberFeedConfigurationPath = "config/feeds.json")
+    string AmberFeedConfigurationPath = "config/feeds.json",
+    bool ShowEffectList = false)
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.

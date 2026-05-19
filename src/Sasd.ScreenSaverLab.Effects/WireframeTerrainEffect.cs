@@ -86,14 +86,26 @@ public sealed class WireframeTerrainEffect : IScreenSaverEffect
     }
 
     /// <summary>
-    /// Draws a simple striped low sun behind the wireframe horizon.
+    /// Draws a simple striped sun above the wireframe horizon.
     /// </summary>
+    /// <remarks>
+    /// The visible sun is clipped to the sky area. This prevents the lower part of the
+    /// ellipse from being drawn below the horizon where it would visually conflict with
+    /// the terrain grid. The result reads more like a retro sunset backdrop behind the
+    /// landscape instead of a second object inside the ground plane.
+    /// </remarks>
     private static void DrawSun(Graphics graphics, Size viewportSize)
     {
         float horizonY = GetHorizonY(viewportSize);
         float radius = Math.Min(viewportSize.Width, viewportSize.Height) * 0.115f;
-        PointF center = new(viewportSize.Width * 0.78f, horizonY - radius * 0.34f);
+        PointF center = new(viewportSize.Width * 0.78f, horizonY - radius * 0.72f);
         RectangleF sunBounds = new(center.X - radius, center.Y - radius, radius * 2f, radius * 2f);
+
+        // The sun should behave like a background object behind the horizon.
+        // Clipping all sun drawing to the sky area avoids drawing the lower half into
+        // the ground/terrain region on wide or low-resolution monitors.
+        GraphicsState previousState = graphics.Save();
+        graphics.SetClip(new RectangleF(0f, 0f, viewportSize.Width, horizonY - 1f));
 
         using GraphicsPath sunPath = new();
         sunPath.AddEllipse(sunBounds);
@@ -113,6 +125,8 @@ public sealed class WireframeTerrainEffect : IScreenSaverEffect
         {
             graphics.DrawLine(stripePen, sunBounds.Left, y, sunBounds.Right, y);
         }
+
+        graphics.Restore(previousState);
     }
 
     /// <summary>

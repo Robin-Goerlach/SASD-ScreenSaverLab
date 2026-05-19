@@ -207,3 +207,38 @@ void Render(Graphics graphics, Size viewportSize);
 ```
 
 This keeps the host unchanged while expanding the visual range of the project.
+
+## V0.6.0 lab and system effects
+
+V0.6.0 adds two additional built-in effects without changing the public effect interface.
+
+### LabConsoleEffect
+
+`LabConsoleEffect` is a pure visual/demo effect. It generates fictional laboratory sample rows and signal traces internally and renders them in a terminal-like research console layout.
+
+The effect deliberately does not access real project, laboratory, patient or customer data. This keeps the screensaver safe for demos and screenshots.
+
+### SystemPulseEffect
+
+`SystemPulseEffect` samples lightweight local telemetry and renders it as an abstract visualization:
+
+- CPU load through the Windows `GetSystemTimes` API,
+- memory load through `GlobalMemoryStatusEx`,
+- network activity through .NET network-interface statistics.
+
+The effect treats telemetry as visual input only. It is not intended to replace a monitoring tool, alerting system or operational dashboard.
+
+### Architecture impact
+
+No new plugin system was introduced. Both effects are registered in `BuiltInScreenSaverEffects` and selected through the existing command-line parser. This keeps the code base small and consistent with the current prototype stage.
+
+
+### V0.6.1 effect alias registry
+
+V0.6.1 centralizes built-in effect aliases in `BuiltInScreenSaverEffects`. The core
+command-line parser may still parse common shortcuts, but the application performs
+a second resolution pass against the concrete built-in registry before creating the
+effect instance.
+
+This deliberately reduces the risk that newly added effects exist as classes but are
+not reachable through their documented shortcuts.

@@ -53,3 +53,8 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 The new effects are intentionally asset-free. They use calculated geometry, particles, simple gradients and GDI+ drawing operations. This keeps the code portable inside the current Windows Forms renderer and avoids introducing OpenGL, SkiaSharp or shader dependencies too early.
 
 A later rendering backend can still be introduced once the effect model is stable enough.
+
+
+## V0.5.1 - Terrain horizon polish
+
+The `WireframeTerrainEffect` sun is now clipped to the sky area and positioned slightly higher. This prevents the lower part of the sun from being drawn below the horizon line on wide or low-resolution displays.

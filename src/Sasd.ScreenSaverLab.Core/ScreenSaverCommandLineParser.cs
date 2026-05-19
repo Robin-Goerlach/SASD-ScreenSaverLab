@@ -34,6 +34,7 @@ public static class ScreenSaverCommandLineParser
         bool showClockOverlay = true;
         string effectName = "star-drift";
         bool showHelp = false;
+        bool showEffectList = false;
         PowerManagementMode powerManagementMode = PowerManagementMode.AllowSleep;
         string amberFeedConfigurationPath = "config/feeds.json";
 
@@ -44,6 +45,12 @@ public static class ScreenSaverCommandLineParser
             if (IsHelpArgument(current))
             {
                 showHelp = true;
+                continue;
+            }
+
+            if (IsEffectListArgument(current))
+            {
+                showEffectList = true;
                 continue;
             }
 
@@ -148,7 +155,8 @@ public static class ScreenSaverCommandLineParser
             effectName,
             showHelp,
             powerManagementMode,
-            amberFeedConfigurationPath);
+            amberFeedConfigurationPath,
+            showEffectList);
     }
 
     /// <summary>
@@ -168,6 +176,14 @@ public static class ScreenSaverCommandLineParser
     private static bool IsHelpArgument(string argument)
     {
         return argument is "help" or "?" or "h" or "man" or "usage";
+    }
+
+    /// <summary>
+    /// Detects arguments that should list all built-in effect names and aliases.
+    /// </summary>
+    private static bool IsEffectListArgument(string argument)
+    {
+        return argument is "list-effects" or "effects" or "effect-list" or "list:effects" or "list=effects";
     }
 
     /// <summary>
@@ -293,7 +309,31 @@ public static class ScreenSaverCommandLineParser
             return true;
         }
 
-        string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
+
+
+        if (argument is "lab" or "console" or "lab-console" or "labconsole" or "research" or "research-console"
+            or "effect:lab" or "effect=lab"
+            or "effect:console" or "effect=console"
+            or "effect:lab-console" or "effect=lab-console"
+            or "effect:labconsole" or "effect=labconsole"
+            or "effect:research-console" or "effect=research-console")
+        {
+            effectName = "lab-console";
+            return true;
+        }
+
+        if (argument is "pulse" or "system" or "system-pulse" or "systempulse" or "sys" or "telemetry" or "monitor"
+            or "effect:pulse" or "effect=pulse"
+            or "effect:system" or "effect=system"
+            or "effect:system-pulse" or "effect=system-pulse"
+            or "effect:systempulse" or "effect=systempulse"
+            or "effect:telemetry" or "effect=telemetry")
+        {
+            effectName = "system-pulse";
+            return true;
+        }
+
+                string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
 
         foreach (string prefix in prefixes)
         {

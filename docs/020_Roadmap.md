@@ -214,3 +214,34 @@ Implemented:
 - updated manpage-style help and README effect list
 
 Note: The previously planned basic configuration dialog remains a later step. V0.5.0 intentionally prioritizes expanding the visual effect collection first, because effect selection through command-line arguments already exists and is stable enough for development testing.
+
+
+## V0.5.1 - Wireframe Terrain horizon polish
+
+- Clip the retro sun to the sky area above the horizon.
+- Move the sun center slightly upward to avoid visual overlap with the terrain grid.
+
+## V0.6.0 - Lab Console and System Pulse effects
+
+Implemented:
+
+- `LabConsoleEffect` as a fictional research-data console with generated sample rows, signal traces and event log output.
+- `SystemPulseEffect` as an abstract CPU/RAM/network visualization with local telemetry sampling, pulse rings, metric cards and sparkline histories.
+- Command-line aliases `/lab`, `/console`, `/effect:lab-console`, `/pulse`, `/system` and `/effect:system-pulse`.
+- Updated README and manpage-style help output for the expanded effect collection.
+
+Notes:
+
+- `LabConsoleEffect` intentionally uses generated demonstration data and does not access patient, laboratory or project records.
+- `SystemPulseEffect` is a visual screensaver effect, not a monitoring or alerting tool. It samples lightweight local telemetry where available and keeps rendering with fallback values if a metric cannot be read.
+
+
+## V0.6.1 - Effect alias robustness
+
+V0.6.1 fixes and hardens command-line effect selection for the new V0.6 effects.
+Direct shortcuts such as `/lab` and `/pulse` are now resolved through the built-in
+effect registry before the fullscreen host starts. This makes the command-line
+selection less dependent on duplicated alias logic in the parser.
+
+A new `/list-effects` command lists canonical names and aliases for quick local
+diagnosis.
