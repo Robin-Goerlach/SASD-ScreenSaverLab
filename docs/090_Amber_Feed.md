@@ -4,9 +4,9 @@
 
 `AmberFeedEffect` is the first prototype of a useful information screensaver. It presents rotating feed-style messages on a dark amber retro terminal screen inspired by 1980s monochrome monitors and teletext-like information pages.
 
-V0.4.3 keeps the strong retro look, loads RSS/Atom source definitions from `config/feeds.json`, refreshes live feed items in the background and falls back to cached or demo messages when feeds are unavailable.
+V0.4.5 keeps the strong retro look, loads RSS/Atom source definitions from `config/feeds.json`, refreshes live feed items in the background and falls back to cached or demo messages when feeds are unavailable.
 
-## Current status in V0.4.3
+## Current status in V0.4.5
 
 Implemented:
 
@@ -26,12 +26,14 @@ Implemented:
 - demo fallback messages when no usable configuration, cache or live feed is available
 - custom feed configuration path via `/feeds:<path>`
 - configurable terminal timing via `itemsPerPage`, `pageDurationSeconds` and `characterRevealRate`
+- adaptive page filling through `autoFillPage`, `minItemsPerPage` and `maxItemsPerPageOnScreen`
+- bounded text rendering with wrapping, clipping and ellipsis trimming for unusually long feed text
 
 Still intentionally simple:
 
 - no graphical feed editor yet
 - no per-feed priority, include/exclude keywords or categories yet
-- no recurring timed refresh loop yet; V0.4.3 performs an initial background refresh
+- no recurring timed refresh loop yet; V0.4.5 performs an initial background refresh
 - no configurable themes beyond the current amber palette
 
 ## Configuration file
@@ -50,7 +52,10 @@ Example:
   "maxItemsPerFeed": 10,
   "requestTimeoutSeconds": 5,
   "useDemoItemsWhenOffline": true,
-  "itemsPerPage": 3,
+  "autoFillPage": true,
+  "itemsPerPage": 5,
+  "minItemsPerPage": 3,
+  "maxItemsPerPageOnScreen": 8,
   "pageDurationSeconds": 28,
   "characterRevealRate": 28,
   "theme": "amber",
@@ -69,15 +74,18 @@ Example:
 }
 ```
 
-V0.4.3 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not retrieved.
+V0.4.5 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not retrieved.
 
 ## Reading speed
 
-Amber Feed is intended to be readable from a distance, not just visually busy. V0.4.3 therefore reads display timing from `config/feeds.json`:
+Amber Feed is intended to be readable from a distance, not just visually busy. V0.4.5 therefore reads display timing and page density from `config/feeds.json`:
 
 ```json
 {
-  "itemsPerPage": 3,
+  "autoFillPage": true,
+  "itemsPerPage": 5,
+  "minItemsPerPage": 3,
+  "maxItemsPerPageOnScreen": 8,
   "pageDurationSeconds": 28,
   "characterRevealRate": 28
 }
@@ -86,17 +94,20 @@ Amber Feed is intended to be readable from a distance, not just visually busy. V
 Meaning:
 
 ```text
-itemsPerPage          How many feed items appear on one terminal page.
-pageDurationSeconds  How long one page stays visible before switching.
-characterRevealRate  How many characters are revealed per second.
+autoFillPage                Whether the effect should calculate page density from monitor height.
+itemsPerPage                Fixed page size used when autoFillPage is false.
+minItemsPerPage             Lower bound for automatic page filling.
+maxItemsPerPageOnScreen     Upper bound for automatic page filling.
+pageDurationSeconds         How long one page stays visible before switching.
+characterRevealRate         How many characters are revealed per second.
 ```
 
 Good starting points:
 
 ```text
-Calm reading:    itemsPerPage=3, pageDurationSeconds=28, characterRevealRate=28
-Very slow:       itemsPerPage=2, pageDurationSeconds=40, characterRevealRate=18
-Faster demo:     itemsPerPage=4, pageDurationSeconds=16, characterRevealRate=48
+Adaptive calm:   autoFillPage=true, minItemsPerPage=3, maxItemsPerPageOnScreen=8, pageDurationSeconds=28
+Very slow:       autoFillPage=false, itemsPerPage=2, pageDurationSeconds=40, characterRevealRate=18
+Faster demo:     autoFillPage=false, itemsPerPage=4, pageDurationSeconds=16, characterRevealRate=48
 ```
 
 The effect clamps unreasonable values at runtime, so an accidental extreme value should not crash rendering.
@@ -142,7 +153,7 @@ Supported aliases:
 
 ## Architecture
 
-V0.4.3 keeps rendering, configuration loading, network retrieval and caching separate:
+V0.4.5 keeps rendering, configuration loading, network retrieval and caching separate:
 
 ```text
 AmberFeedEffect

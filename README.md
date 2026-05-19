@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.4.3 prototype**
+Version: **V0.4.5 prototype**
 
 Implemented:
 
@@ -30,6 +30,8 @@ Implemented:
 - Initial GitHub Actions build workflow
 - Initial project documentation
 - Timeout-safe RSS/Atom retrieval with cache/demo fallback for `AmberFeedEffect`
+- Bounded Amber Feed text layout for long titles, URLs and descriptions
+- Adaptive Amber Feed page filling based on monitor/window height
 
 Not yet implemented:
 
@@ -96,7 +98,7 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.4.3 contains four built-in effects:
+V0.4.5 contains four built-in effects:
 
 - `star-drift`
 - `data-stream`
@@ -135,7 +137,7 @@ Unknown effect names currently fall back to `StarDriftEffect` instead of crashin
 
 ### Amber Feed RSS/Atom configuration
 
-V0.4.3 loads RSS/Atom source definitions from:
+V0.4.5 loads RSS/Atom source definitions from:
 
 ```text
 config/feeds.json
@@ -143,17 +145,20 @@ config/feeds.json
 
 The effect starts immediately with cached items, configured-source preview items or demo fallback messages. It then refreshes enabled RSS/Atom feeds in the background with a short timeout. If live retrieval fails, the terminal keeps rendering and falls back to the local cache or demo items.
 
-V0.4.3 also makes the Amber Feed reading speed configurable in `config/feeds.json`:
+V0.4.5 also makes the Amber Feed reading speed and page density configurable in `config/feeds.json`:
 
 ```json
 {
-  "itemsPerPage": 3,
+  "autoFillPage": true,
+  "itemsPerPage": 5,
+  "minItemsPerPage": 3,
+  "maxItemsPerPageOnScreen": 8,
   "pageDurationSeconds": 28,
   "characterRevealRate": 28
 }
 ```
 
-Use a higher `pageDurationSeconds` value to keep pages visible longer and a lower `characterRevealRate` value to reveal text more slowly.
+Use `autoFillPage: true` to let the effect decide how many RSS items fit on the current monitor. `minItemsPerPage` and `maxItemsPerPageOnScreen` bound the automatic result. Use a higher `pageDurationSeconds` value to keep pages visible longer and a lower `characterRevealRate` value to reveal text more slowly.
 
 The cache is stored in the current user's local application-data folder, typically:
 
@@ -264,7 +269,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.4.3 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.4.5 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

@@ -41,14 +41,37 @@ public sealed class AmberFeedConfiguration
     public bool UseDemoItemsWhenOffline { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets how many feed items are displayed on one terminal page.
+    /// Gets or sets whether Amber Feed should automatically fill pages based on monitor size.
+    /// </summary>
+    /// <remarks>
+    /// When this is enabled, <see cref="ItemsPerPage" /> becomes the fallback value for
+    /// fixed mode, while <see cref="MinItemsPerPage" /> and
+    /// <see cref="MaxItemsPerPageOnScreen" /> define the automatic range.
+    /// </remarks>
+    [JsonPropertyName("autoFillPage")]
+    public bool AutoFillPage { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets how many feed items are displayed on one terminal page when automatic filling is disabled.
     /// </summary>
     /// <remarks>
     /// A smaller page is easier to read on a screensaver. The effect clamps unreasonable
     /// values at runtime so a broken configuration does not crash rendering.
     /// </remarks>
     [JsonPropertyName("itemsPerPage")]
-    public int ItemsPerPage { get; set; } = 3;
+    public int ItemsPerPage { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the minimum number of feed items shown per page in automatic fill mode.
+    /// </summary>
+    [JsonPropertyName("minItemsPerPage")]
+    public int MinItemsPerPage { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the maximum number of feed items shown per page in automatic fill mode.
+    /// </summary>
+    [JsonPropertyName("maxItemsPerPageOnScreen")]
+    public int MaxItemsPerPageOnScreen { get; set; } = 8;
 
     /// <summary>
     /// Gets or sets how long one terminal page remains visible before switching.
@@ -63,7 +86,7 @@ public sealed class AmberFeedConfiguration
     public double CharacterRevealRate { get; set; } = 28.0;
 
     /// <summary>
-    /// Gets or sets the intended visual theme. V0.4.3 still renders the amber theme only.
+    /// Gets or sets the intended visual theme. V0.4.5 still renders the amber theme only.
     /// </summary>
     [JsonPropertyName("theme")]
     public string Theme { get; set; } = "amber";

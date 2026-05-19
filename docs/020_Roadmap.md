@@ -124,9 +124,29 @@ Implemented:
 - runtime clamping for unreasonable timing values
 - Amber Feed documentation updated with slow/calm/fast examples
 
+### V0.4.4 — Amber Feed layout hardening
+
+Implemented:
+
+- clipped single-line rendering for long header, status and source text
+- bounded wrapped rendering for long feed titles and summaries
+- ellipsis trimming for overly long RSS text
+- vertical content boundary so feed text cannot overwrite the progress bar or footer
+- improved resilience for unusually long URLs, titles or descriptions in external feeds
+
 ## Next recommended versions
 
-### V0.4.4 — Amber Feed refinement
+### V0.4.5 — Adaptive Amber Feed page fill
+
+Implemented:
+
+- optional automatic page filling based on the current monitor/window height
+- new `autoFillPage` configuration switch
+- new `minItemsPerPage` and `maxItemsPerPageOnScreen` configuration bounds
+- safer fallback to fixed `itemsPerPage` when automatic filling is disabled
+- better use of large screens without making small screens too dense
+
+### V0.4.6 — Amber Feed refinement
 
 Possible improvements:
 

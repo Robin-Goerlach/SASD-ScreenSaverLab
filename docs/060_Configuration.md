@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.4.3 intentionally still uses command-line configuration for effect selection and now also reads `config/feeds.json` for Amber Feed RSS sources and display timing. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.4.5 intentionally still uses command-line configuration for effect selection and now also reads `config/feeds.json` for Amber Feed RSS sources and display timing. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -169,13 +169,13 @@ The settings could later be stored as JSON in the user's application data direct
 
 ## Amber Feed configuration
 
-V0.4.3 reads and validates the Amber Feed configuration file:
+V0.4.5 reads and validates the Amber Feed configuration file:
 
 ```text
 config/feeds.json
 ```
 
-The file defines RSS/Atom source metadata and the Amber Feed reading speed. The current version refreshes enabled RSS/Atom feeds in the background and falls back to cached or demo items when live retrieval fails.
+The file defines RSS/Atom source metadata, the Amber Feed reading speed and the adaptive page fill behavior. The current version refreshes enabled RSS/Atom feeds in the background and falls back to cached or demo items when live retrieval fails.
 
 Example keys:
 
@@ -185,7 +185,10 @@ Example keys:
   "maxItemsPerFeed": 10,
   "requestTimeoutSeconds": 5,
   "useDemoItemsWhenOffline": true,
-  "itemsPerPage": 3,
+  "autoFillPage": true,
+  "itemsPerPage": 5,
+  "minItemsPerPage": 3,
+  "maxItemsPerPageOnScreen": 8,
   "pageDurationSeconds": 28,
   "characterRevealRate": 28,
   "theme": "amber",
@@ -200,15 +203,18 @@ Example keys:
 ```
 
 
-Amber Feed timing keys:
+Amber Feed display keys:
 
 ```text
-itemsPerPage          Number of feed items shown on one terminal page.
-pageDurationSeconds  Seconds before the next page is displayed.
-characterRevealRate  Characters revealed per second by the typewriter animation.
+autoFillPage                Let the effect calculate page density from monitor height.
+itemsPerPage                Fixed page size used when autoFillPage is false.
+minItemsPerPage             Lower bound for automatic page filling.
+maxItemsPerPageOnScreen     Upper bound for automatic page filling.
+pageDurationSeconds         Seconds before the next page is displayed.
+characterRevealRate         Characters revealed per second by the typewriter animation.
 ```
 
-For a calmer, more readable display, increase `pageDurationSeconds` and/or decrease `characterRevealRate`.
+For a calmer, more readable display, increase `pageDurationSeconds` and/or decrease `characterRevealRate`. To use available screen space more aggressively, keep `autoFillPage` enabled and raise `maxItemsPerPageOnScreen`.
 
 Amber Feed command-line aliases:
 

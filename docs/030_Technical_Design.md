@@ -167,9 +167,9 @@ The project should first become a small, stable, visually useful screensaver lab
 
 ## Amber Feed design note
 
-V0.4.3 keeps `AmberFeedEffect` as the renderer and adds timeout-safe RSS/Atom retrieval in the effects layer. The effect starts immediately, displays cached/configuration/demo items first, and then swaps in live feed items after a background refresh succeeds.
+V0.4.5 keeps `AmberFeedEffect` as the renderer and adds timeout-safe RSS/Atom retrieval in the effects layer. The effect starts immediately, displays cached/configuration/demo items first, and then swaps in live feed items after a background refresh succeeds.
 
-V0.4.3 adds configurable Amber Feed timing through `config/feeds.json`. The rendering code resolves `itemsPerPage`, `pageDurationSeconds` and `characterRevealRate` once during effect construction and clamps unreasonable values so display configuration remains safe.
+V0.4.5 adds configurable Amber Feed timing and adaptive page fill through `config/feeds.json`. The rendering code resolves `itemsPerPage`, `autoFillPage`, `minItemsPerPage`, `maxItemsPerPageOnScreen`, `pageDurationSeconds` and `characterRevealRate`, clamps unreasonable values and calculates the active item count from the current terminal height when automatic filling is enabled.
 
 The current split is:
 

@@ -17,7 +17,10 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
 {
     private const float DefaultPageDurationSeconds = 28f;
     private const float DefaultCharacterRevealRate = 28f;
-    private const int DefaultItemsPerPage = 3;
+    private const int DefaultItemsPerPage = 5;
+    private const int DefaultMinItemsPerPage = 3;
+    private const int DefaultMaxItemsPerPage = 8;
+    private const bool DefaultAutoFillPage = true;
 
     private static readonly Color BackgroundColor = Color.FromArgb(255, 3, 2, 0);
     private static readonly Color DarkAmberColor = Color.FromArgb(255, 82, 47, 0);
@@ -31,7 +34,10 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     private readonly CancellationTokenSource _feedRefreshCancellation = new();
     private readonly float _pageDurationSeconds;
     private readonly float _characterRevealRate;
-    private readonly int _itemsPerPage;
+    private readonly int _configuredItemsPerPage;
+    private readonly int _minItemsPerPage;
+    private readonly int _maxItemsPerPage;
+    private readonly bool _autoFillPage;
 
     private List<FeedItem> _items;
     private string _statusLine;
@@ -72,7 +78,10 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         _configurationResult = configurationResult;
         _pageDurationSeconds = ResolvePageDurationSeconds(configurationResult.Configuration);
         _characterRevealRate = ResolveCharacterRevealRate(configurationResult.Configuration);
-        _itemsPerPage = ResolveItemsPerPage(configurationResult.Configuration);
+        _configuredItemsPerPage = ResolveItemsPerPage(configurationResult.Configuration);
+        _minItemsPerPage = ResolveMinItemsPerPage(configurationResult.Configuration);
+        _maxItemsPerPage = ResolveMaxItemsPerPage(configurationResult.Configuration, _minItemsPerPage);
+        _autoFillPage = configurationResult.Configuration?.AutoFillPage ?? DefaultAutoFillPage;
 
         IReadOnlyList<AmberFeedDisplayItem> cachedItems = configurationResult.HasEnabledFeeds
             ? AmberFeedCacheService.LoadItems()
@@ -122,11 +131,18 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         _totalElapsed += seconds;
         _flicker = 0.5f + RandomRange(-0.08f, 0.08f);
 
+        int pageCount = CalculatePageCount(viewportSize);
+
+        if (_pageIndex >= pageCount)
+        {
+            _pageIndex = 0;
+        }
+
         if (_elapsedOnPage >= _pageDurationSeconds)
         {
             _elapsedOnPage = 0f;
             _visibleCharacters = 0;
-            _pageIndex = (_pageIndex + 1) % CalculatePageCount();
+            _pageIndex = (_pageIndex + 1) % pageCount;
         }
 
         _visibleCharacters = Math.Max(_visibleCharacters, (int)(_elapsedOnPage * _characterRevealRate));
@@ -255,10 +271,31 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         string statusLine = GetStatusLineSnapshot();
         string status = $"{statusLine}  //  {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
 
-        graphics.DrawString(header, headerFont, brightBrush, terminalBounds.X + 28f, terminalBounds.Y + 20f);
-        graphics.DrawString(status, footerFont, dimBrush, terminalBounds.X + 28f, terminalBounds.Bottom - 31f);
+        float contentX = terminalBounds.X + 30f;
+        float contentWidth = terminalBounds.Width - 60f;
+        float contentBottom = terminalBounds.Bottom - 76f;
 
-        List<FeedItem> pageItems = GetCurrentPageItems();
+        DrawSingleLineClipped(
+            graphics,
+            header,
+            headerFont,
+            brightBrush,
+            terminalBounds.X + 28f,
+            terminalBounds.Y + 20f,
+            terminalBounds.Width - 56f,
+            headerFont.GetHeight(graphics) + 4f);
+
+        DrawSingleLineClipped(
+            graphics,
+            status,
+            footerFont,
+            dimBrush,
+            terminalBounds.X + 28f,
+            terminalBounds.Bottom - 31f,
+            terminalBounds.Width - 100f,
+            footerFont.GetHeight(graphics) + 4f);
+
+        List<FeedItem> pageItems = GetCurrentPageItems(terminalBounds);
         float y = terminalBounds.Y + 78f;
         float lineHeight = bodyFont.GetHeight(graphics) + 5f;
         int remainingCharacters = _visibleCharacters;
@@ -269,25 +306,50 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
             string titleLine = item.Title.ToUpperInvariant();
             string summaryLine = item.Summary;
 
-            if (remainingCharacters <= 0)
+            if (remainingCharacters <= 0 || y >= contentBottom)
             {
                 break;
             }
 
             string visibleSource = RevealText(sourceLine, ref remainingCharacters);
-            graphics.DrawString(visibleSource, sourceFont, brightBrush, terminalBounds.X + 30f, y);
+            DrawSingleLineClipped(graphics, visibleSource, sourceFont, brightBrush, contentX, y, contentWidth, lineHeight);
             y += lineHeight * 0.9f;
 
             string visibleTitle = RevealText(titleLine, ref remainingCharacters);
-            DrawWrappedText(graphics, visibleTitle, bodyFont, amberBrush, terminalBounds.X + 30f, ref y, terminalBounds.Width - 60f, lineHeight, maxLines: 2);
+            DrawWrappedText(
+                graphics,
+                visibleTitle,
+                bodyFont,
+                amberBrush,
+                contentX,
+                ref y,
+                contentWidth,
+                lineHeight,
+                maxLines: 2,
+                contentBottom);
 
             string visibleSummary = RevealText(summaryLine, ref remainingCharacters);
-            DrawWrappedText(graphics, visibleSummary, footerFont, dimBrush, terminalBounds.X + 30f, ref y, terminalBounds.Width - 60f, footerFont.GetHeight(graphics) + 4f, maxLines: 2);
+            DrawWrappedText(
+                graphics,
+                visibleSummary,
+                footerFont,
+                dimBrush,
+                contentX,
+                ref y,
+                contentWidth,
+                footerFont.GetHeight(graphics) + 4f,
+                maxLines: 2,
+                contentBottom);
+
+            if (y + 28f >= contentBottom)
+            {
+                break;
+            }
 
             y += 16f;
 
             using Pen separatorPen = new(Color.FromArgb(74, 255, 176, 40), 1f);
-            graphics.DrawLine(separatorPen, terminalBounds.X + 30f, y, terminalBounds.Right - 30f, y);
+            graphics.DrawLine(separatorPen, contentX, y, terminalBounds.Right - 30f, y);
             y += 16f;
         }
 
@@ -347,8 +409,44 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     }
 
     /// <summary>
-    /// Draws wrapped text with a simple fixed-width approximation.
+    /// Draws a single line inside a clipping rectangle and adds an ellipsis if the text is too long.
     /// </summary>
+    private static void DrawSingleLineClipped(
+        Graphics graphics,
+        string text,
+        Font font,
+        Brush brush,
+        float x,
+        float y,
+        float width,
+        float height)
+    {
+        if (string.IsNullOrEmpty(text) || width <= 1f || height <= 1f)
+        {
+            return;
+        }
+
+        RectangleF layoutRectangle = new(x, y, width, height);
+
+        using StringFormat format = new(StringFormatFlags.NoWrap)
+        {
+            Trimming = StringTrimming.EllipsisCharacter,
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Near
+        };
+
+        graphics.DrawString(text, font, brush, layoutRectangle, format);
+    }
+
+    /// <summary>
+    /// Draws wrapped text inside the terminal content area.
+    /// </summary>
+    /// <remarks>
+    /// RSS feeds can contain very long titles, URLs or descriptions without useful
+    /// whitespace. Drawing into a bounded layout rectangle prevents those strings from
+    /// bleeding over the terminal frame. The method also respects the available vertical
+    /// content area so long entries cannot overwrite the progress bar or footer.
+    /// </remarks>
     private static void DrawWrappedText(
         Graphics graphics,
         string text,
@@ -358,71 +456,122 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         ref float y,
         float width,
         float lineHeight,
-        int maxLines)
+        int maxLines,
+        float bottom)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrWhiteSpace(text) || width <= 1f || lineHeight <= 1f || maxLines <= 0 || y >= bottom)
         {
             return;
         }
 
-        int approximateCharactersPerLine = Math.Max(18, (int)(width / Math.Max(7f, font.Size * 0.66f)));
-        string[] words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        List<string> lines = [];
-        string currentLine = string.Empty;
+        int availableLines = Math.Min(maxLines, Math.Max(0, (int)MathF.Floor((bottom - y) / lineHeight)));
 
-        foreach (string word in words)
+        if (availableLines <= 0)
         {
-            string candidate = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
-
-            if (candidate.Length > approximateCharactersPerLine && currentLine.Length > 0)
-            {
-                lines.Add(currentLine);
-                currentLine = word;
-            }
-            else
-            {
-                currentLine = candidate;
-            }
-
-            if (lines.Count >= maxLines)
-            {
-                break;
-            }
+            return;
         }
 
-        if (lines.Count < maxLines && currentLine.Length > 0)
-        {
-            lines.Add(currentLine);
-        }
+        RectangleF layoutRectangle = new(x, y, width, availableLines * lineHeight);
 
-        foreach (string line in lines.Take(maxLines))
+        using StringFormat format = new(StringFormatFlags.LineLimit)
         {
-            graphics.DrawString(line, font, brush, x, y);
-            y += lineHeight;
-        }
+            Trimming = StringTrimming.EllipsisCharacter,
+            Alignment = StringAlignment.Near,
+            LineAlignment = StringAlignment.Near
+        };
+
+        graphics.DrawString(text, font, brush, layoutRectangle, format);
+
+        SizeF measuredSize = graphics.MeasureString(text, font, new SizeF(width, layoutRectangle.Height), format);
+        float consumedHeight = Math.Clamp(measuredSize.Height, lineHeight, layoutRectangle.Height);
+        y += consumedHeight;
     }
 
     /// <summary>
-    /// Returns the current visible page of demo feed items.
+    /// Returns the current visible page of feed items.
     /// </summary>
-    private List<FeedItem> GetCurrentPageItems()
+    /// <remarks>
+    /// V0.4.5 can automatically adapt the page density to the available terminal
+    /// height. This lets Full HD and larger displays show more RSS entries while
+    /// smaller screens remain readable.
+    /// </remarks>
+    private List<FeedItem> GetCurrentPageItems(RectangleF terminalBounds)
     {
+        int itemsPerPage = CalculateItemsPerPage(terminalBounds);
+
         lock (_itemSync)
         {
-            int startIndex = _pageIndex * _itemsPerPage;
-            return _items.Skip(startIndex).Take(_itemsPerPage).ToList();
+            int pageCount = CalculatePageCountUnsafe(itemsPerPage);
+
+            if (_pageIndex >= pageCount)
+            {
+                _pageIndex = 0;
+            }
+
+            int startIndex = _pageIndex * itemsPerPage;
+            return _items.Skip(startIndex).Take(itemsPerPage).ToList();
         }
     }
 
     /// <summary>
     /// Calculates how many pages are needed for the current feed item list.
     /// </summary>
-    private int CalculatePageCount()
+    private int CalculatePageCount(Size viewportSize)
     {
+        int itemsPerPage = CalculateItemsPerPage(viewportSize);
+
         lock (_itemSync)
         {
-            return Math.Max(1, (int)Math.Ceiling(_items.Count / (double)_itemsPerPage));
+            return CalculatePageCountUnsafe(itemsPerPage);
         }
+    }
+
+    /// <summary>
+    /// Calculates the current page count. The caller must hold the item synchronization lock.
+    /// </summary>
+    private int CalculatePageCountUnsafe(int itemsPerPage)
+    {
+        return Math.Max(1, (int)Math.Ceiling(_items.Count / (double)Math.Max(1, itemsPerPage)));
+    }
+
+    /// <summary>
+    /// Calculates the active item count for the current viewport size.
+    /// </summary>
+    private int CalculateItemsPerPage(Size viewportSize)
+    {
+        return CalculateItemsPerPage(CalculateTerminalBounds(viewportSize));
+    }
+
+    /// <summary>
+    /// Calculates how many feed items should be placed on one terminal page.
+    /// </summary>
+    /// <remarks>
+    /// The calculation is intentionally conservative. A feed item may need a source
+    /// line, up to two title lines, up to two summary lines and separator spacing.
+    /// The result is clamped through the user-configurable minimum and maximum values.
+    /// </remarks>
+    private int CalculateItemsPerPage(RectangleF terminalBounds)
+    {
+        if (!_autoFillPage)
+        {
+            return _configuredItemsPerPage;
+        }
+
+        float contentHeight = Math.Max(1f, terminalBounds.Height - 154f);
+        float bodyFontSize = CalculateBodyFontSize(terminalBounds);
+        float bodyLineHeight = bodyFontSize * 1.55f;
+        float summaryLineHeight = bodyFontSize * 1.18f;
+        float sourceLineHeight = bodyFontSize * 1.35f;
+        float separatorAndPadding = 32f;
+
+        float estimatedItemHeight =
+            sourceLineHeight +
+            bodyLineHeight * 2f +
+            summaryLineHeight * 2f +
+            separatorAndPadding;
+
+        int calculatedItems = (int)MathF.Floor(contentHeight / Math.Max(1f, estimatedItemHeight));
+        return Math.Clamp(calculatedItems, _minItemsPerPage, _maxItemsPerPage);
     }
 
     /// <summary>
@@ -534,12 +683,30 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     }
 
     /// <summary>
-    /// Resolves the configured page density. Fewer items per page are easier to read.
+    /// Resolves the configured fixed page density. It is used when automatic filling is disabled.
     /// </summary>
     private static int ResolveItemsPerPage(AmberFeedConfiguration? configuration)
     {
         int configuredValue = configuration?.ItemsPerPage ?? DefaultItemsPerPage;
-        return Math.Clamp(configuredValue, 1, 6);
+        return Math.Clamp(configuredValue, 1, 12);
+    }
+
+    /// <summary>
+    /// Resolves the minimum page density used by automatic filling.
+    /// </summary>
+    private static int ResolveMinItemsPerPage(AmberFeedConfiguration? configuration)
+    {
+        int configuredValue = configuration?.MinItemsPerPage ?? DefaultMinItemsPerPage;
+        return Math.Clamp(configuredValue, 1, 12);
+    }
+
+    /// <summary>
+    /// Resolves the maximum page density used by automatic filling.
+    /// </summary>
+    private static int ResolveMaxItemsPerPage(AmberFeedConfiguration? configuration, int minItemsPerPage)
+    {
+        int configuredValue = configuration?.MaxItemsPerPageOnScreen ?? DefaultMaxItemsPerPage;
+        return Math.Clamp(configuredValue, minItemsPerPage, 12);
     }
 
     /// <summary>

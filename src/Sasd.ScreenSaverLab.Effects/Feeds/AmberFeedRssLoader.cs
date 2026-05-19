@@ -124,7 +124,7 @@ public static class AmberFeedRssLoader
             Timeout = TimeSpan.FromSeconds(timeoutSeconds + 1)
         };
 
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SASD-ScreenSaverLab/0.4.3");
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SASD-ScreenSaverLab/0.4.5");
         httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/rss+xml");
         httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/atom+xml");
         httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/xml");
