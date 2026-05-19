@@ -107,6 +107,13 @@ OPTIONS
     /no-clock, /clock:off, /clock:false, /hide-clock
         Hide the clock/date/effect-name overlay.
 
+    /feeds:<path>
+        Select the JSON configuration file used by the Amber Feed effect.
+        The default is config/feeds.json.
+
+        Example:
+            /feeds:config/feeds.json
+
 POWER MANAGEMENT
     /allow-sleep
         Do not prevent Windows from entering sleep mode or turning off the
@@ -132,8 +139,9 @@ EFFECTS
         Soft glowing light trails moving across a calm visualizer field.
 
     amber-feed
-        Amber retro terminal feed display with demo headlines. Real RSS
-        retrieval and feed caching are planned for a later iteration.
+        Amber retro terminal feed display. V0.4.1 loads and validates
+        configured RSS source definitions from config/feeds.json, but does
+        not download live RSS/Atom items yet.
 
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
@@ -146,6 +154,8 @@ EXAMPLES
 
     Sasd.ScreenSaverLab.App.exe /amber /no-clock
 
+    Sasd.ScreenSaverLab.App.exe /amber /feeds:config/feeds.json /no-clock
+
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
     Sasd.ScreenSaverLab.App.exe /stream /no-clock /keep-display-awake
@@ -155,7 +165,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.4.0
+    0.4.1
 
 AUTHOR
     SASD - Scientific and Software Development

@@ -1,17 +1,18 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using Sasd.ScreenSaverLab.Core;
+using Sasd.ScreenSaverLab.Effects.Feeds;
 
 namespace Sasd.ScreenSaverLab.Effects;
 
 /// <summary>
-/// Displays rotating demo feed items in a warm amber retro-terminal style.
+/// Displays rotating feed-style items in a warm amber retro-terminal style.
 /// </summary>
 /// <remarks>
-/// Amber Feed is the first stage of the planned RSS-capable screensaver effect. V0.4.0
-/// deliberately renders built-in demo items only. The real RSS service and JSON feed
-/// configuration reader are planned for the next iterations so network access, caching
-/// and error handling can be implemented without destabilizing the visual effect.
+/// Amber Feed is the first stage of the planned RSS-capable screensaver effect. V0.4.1
+/// can load and validate <c>config/feeds.json</c>, but deliberately still avoids live
+/// network access. Real RSS retrieval, caching and timeout handling are planned for the
+/// next iterations.
 /// </remarks>
 public sealed class AmberFeedEffect : IScreenSaverEffect
 {
@@ -26,7 +27,8 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     private static readonly Color DimAmberColor = Color.FromArgb(255, 155, 91, 12);
 
     private readonly Random _random = new();
-    private readonly List<FeedItem> _items = CreateDemoItems();
+    private readonly List<FeedItem> _items;
+    private readonly string _statusLine;
 
     private float _elapsedOnPage;
     private float _totalElapsed;
@@ -34,11 +36,44 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     private int _visibleCharacters;
     private float _flicker;
 
+
+    /// <summary>
+    /// Initializes a new Amber Feed effect using the default configuration file path.
+    /// </summary>
+    public AmberFeedEffect()
+        : this(AmberFeedConfigurationLoader.Load(AmberFeedConfigurationLoader.DefaultConfigurationPath))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new Amber Feed effect using the provided configuration path.
+    /// </summary>
+    /// <param name="configurationPath">Path to the Amber Feed JSON configuration file.</param>
+    public AmberFeedEffect(string? configurationPath)
+        : this(AmberFeedConfigurationLoader.Load(configurationPath))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new Amber Feed effect from a preloaded configuration result.
+    /// </summary>
+    /// <param name="configurationResult">Validated configuration load result.</param>
+    private AmberFeedEffect(AmberFeedConfigurationResult configurationResult)
+    {
+        ArgumentNullException.ThrowIfNull(configurationResult);
+
+        _items = configurationResult.Items.Count > 0
+            ? configurationResult.Items.Select(item => new FeedItem(item.Source, item.Title, item.Summary)).ToList()
+            : CreateDemoItems();
+
+        _statusLine = configurationResult.StatusLine;
+    }
+
     /// <inheritdoc />
     public string Name => "Amber Feed";
 
     /// <inheritdoc />
-    public string Description => "Amber retro terminal feed display with demo headlines and teletext-like motion.";
+    public string Description => "Amber retro terminal feed display with configured RSS source preview and teletext-like motion.";
 
     /// <inheritdoc />
     public void Initialize(Size viewportSize)
@@ -189,7 +224,7 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
         using Brush darkBrush = new SolidBrush(ColorWithFlicker(DarkAmberColor, 165));
 
         string header = $"SASD AMBER FEED TERMINAL  //  PAGE {101 + _pageIndex:D3}";
-        string status = $"DEMO MODE  //  RSS CONFIG PREPARED  //  {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+        string status = $"{_statusLine}  //  {DateTime.Now:yyyy-MM-dd HH:mm:ss}";
 
         graphics.DrawString(header, headerFont, brightBrush, terminalBounds.X + 28f, terminalBounds.Y + 20f);
         graphics.DrawString(status, footerFont, dimBrush, terminalBounds.X + 28f, terminalBounds.Bottom - 31f);
@@ -404,7 +439,7 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     }
 
     /// <summary>
-    /// Creates the built-in demo items used until real RSS retrieval is implemented.
+    /// Creates built-in demo items used when no usable configuration source is available.
     /// </summary>
     private static List<FeedItem> CreateDemoItems()
     {
@@ -413,7 +448,7 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
             new("SASD", "ScreenSaver Lab reaches Amber Feed prototype", "Retro terminal rendering is available. Real RSS loading will follow after cache and timeout handling are designed."),
             new("SECURITY", "Patch window scheduled for laboratory systems", "Demo message showing how operational notices could be displayed on an always-on information screen."),
             new("RESEARCH", "Open datasets queued for review", "A future SASD research dashboard could rotate public science feeds, papers, releases and project notes."),
-            new("LINUX", "Kernel and distribution news placeholder", "RSS sources will be configurable through config/feeds.json instead of being hard-coded in the effect."),
+            new("LINUX", "Kernel and distribution news placeholder", "RSS sources are now read from config/feeds.json; real feed downloads will follow in a later iteration."),
             new("DEV", "Data Stream and Light Trails remain available", "Use /effect:data-stream or /effect:light-trails to switch back to the earlier visual effects."),
             new("OPS", "Power management options are opt-in", "Use /keep-awake or /keep-display-awake only for demos, dashboards and kiosk-like use cases."),
             new("ROADMAP", "Feed cache planned for next iteration", "The screensaver should keep rendering even if a feed is slow, offline or temporarily malformed."),
@@ -422,7 +457,7 @@ public sealed class AmberFeedEffect : IScreenSaverEffect
     }
 
     /// <summary>
-    /// Small immutable demo feed item used by the V0.4.0 effect.
+    /// Small immutable feed item rendered by the effect.
     /// </summary>
     private sealed record FeedItem(string Source, string Title, string Summary);
 }

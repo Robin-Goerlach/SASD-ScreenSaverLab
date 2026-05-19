@@ -12,4 +12,8 @@
     <ProjectReference Include="..\Sasd.ScreenSaverLab.Core\Sasd.ScreenSaverLab.Core.csproj" />
     <ProjectReference Include="..\Sasd.ScreenSaverLab.Effects\Sasd.ScreenSaverLab.Effects.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\config\feeds.json" Link="config\feeds.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

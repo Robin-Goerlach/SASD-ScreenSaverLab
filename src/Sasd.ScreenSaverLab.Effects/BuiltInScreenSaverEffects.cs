@@ -22,8 +22,9 @@ public static class BuiltInScreenSaverEffects
     /// Creates a new effect instance for the requested name.
     /// </summary>
     /// <param name="effectName">Canonical effect name or user-friendly alias.</param>
+    /// <param name="amberFeedConfigurationPath">Optional JSON configuration path for the Amber Feed effect.</param>
     /// <returns>A fresh effect instance. Each monitor should receive its own instance.</returns>
-    public static IScreenSaverEffect Create(string? effectName)
+    public static IScreenSaverEffect Create(string? effectName, string? amberFeedConfigurationPath = null)
     {
         string normalized = NormalizeEffectName(effectName);
 
@@ -31,7 +32,7 @@ public static class BuiltInScreenSaverEffects
         {
             "data-stream" or "datastream" or "data" or "stream" or "cipherfall" or "cipher" => new DataStreamEffect(),
             "light-trails" or "lighttrail" or "light-trail" or "trails" or "trail" or "light" or "lights" => new LightTrailsEffect(),
-            "amber-feed" or "amberfeed" or "amber" or "feed" or "retro-feed" or "retrofeed" => new AmberFeedEffect(),
+            "amber-feed" or "amberfeed" or "amber" or "feed" or "retro-feed" or "retrofeed" => new AmberFeedEffect(amberFeedConfigurationPath),
             "star-drift" or "star" or "stars" => new StarDriftEffect(),
 
             // Unknown names intentionally fall back to the safe default. This prevents

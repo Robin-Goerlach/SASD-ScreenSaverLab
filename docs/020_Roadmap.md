@@ -153,21 +153,23 @@ Implemented in V0.4.0:
 - initial `config/feeds.json` example file
 - dedicated Amber Feed design note
 
+### V0.4.1 — Feed configuration loading
+
+Status: implemented.
+
+Implemented in V0.4.1:
+
+- parse and validate `config/feeds.json`
+- accept custom feed configuration path with `/feeds:<path>`
+- show configured feed sources as Amber Feed terminal preview items
+- keep demo mode as safe fallback when no usable configuration is available
+- avoid live network I/O in the visual effect
+
 Deferred:
 
-- reading the JSON configuration file
 - RSS/Atom download service
 - cache and timeout handling
 - configurable terminal themes
-
-### V0.4.1 — Feed configuration loading
-
-Planned next step:
-
-- parse `config/feeds.json`
-- validate feed entries
-- expose feed settings to the application layer
-- keep demo mode as safe fallback
 
 ### V0.4.2 — RSS/Atom retrieval and cache
 

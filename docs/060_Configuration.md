@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.4.0 intentionally still uses command-line configuration for effect selection and includes an initial `config/feeds.json` preview for future RSS sources. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.4.1 intentionally still uses command-line configuration for effect selection and now also reads `config/feeds.json` for the Amber Feed source preview. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -167,15 +167,15 @@ public sealed record ScreenSaverSettings(
 The settings could later be stored as JSON in the user's application data directory.
 
 
-## Amber Feed configuration preview
+## Amber Feed configuration
 
-V0.4.0 includes an example feed configuration file:
+V0.4.1 reads and validates the Amber Feed configuration file:
 
 ```text
 config/feeds.json
 ```
 
-The file is not read by the application yet. It documents the planned shape for configurable RSS/Atom sources.
+The file defines RSS/Atom source metadata. The current version shows configured sources as terminal preview items; it does not download live RSS/Atom entries yet.
 
 Example keys:
 
@@ -205,8 +205,23 @@ Amber Feed command-line aliases:
 /retro-feed
 ```
 
-Useful test command:
+Feed configuration path aliases:
+
+```text
+/feeds:<path>
+/feeds=<path>
+/feed-config:<path>
+/feed-config=<path>
+/rss-config:<path>
+/rss-config=<path>
+/rss:<path>
+/rss=<path>
+```
+
+Useful test commands:
 
 ```powershell
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /amber /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /amber /feeds:config/feeds.json /no-clock
 ```

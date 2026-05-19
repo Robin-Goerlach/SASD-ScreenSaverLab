@@ -8,7 +8,8 @@ namespace Sasd.ScreenSaverLab.Core;
 /// <c>/p HWND</c>. This parser also understands developer-friendly arguments for
 /// multi-monitor testing, for example <c>/screen:1</c>, <c>/primary</c> and
 /// <c>/all-screens</c>. It also supports overlay configuration, built-in effect selection,
-/// optional power-management behavior and a manpage-like <c>/help</c> output.
+/// optional power-management behavior, Amber Feed configuration path selection and a
+/// manpage-like <c>/help</c> output.
 /// </remarks>
 public static class ScreenSaverCommandLineParser
 {
@@ -34,6 +35,7 @@ public static class ScreenSaverCommandLineParser
         string effectName = "star-drift";
         bool showHelp = false;
         PowerManagementMode powerManagementMode = PowerManagementMode.AllowSleep;
+        string amberFeedConfigurationPath = "config/feeds.json";
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -120,6 +122,12 @@ public static class ScreenSaverCommandLineParser
                 continue;
             }
 
+            if (TryParseAmberFeedConfigurationPath(current, out string parsedAmberFeedConfigurationPath))
+            {
+                amberFeedConfigurationPath = parsedAmberFeedConfigurationPath;
+                continue;
+            }
+
             if (TryParseScreenIndex(current, out int parsedScreenIndex))
             {
                 targetScreenIndex = parsedScreenIndex;
@@ -139,7 +147,8 @@ public static class ScreenSaverCommandLineParser
             showClockOverlay,
             effectName,
             showHelp,
-            powerManagementMode);
+            powerManagementMode,
+            amberFeedConfigurationPath);
     }
 
     /// <summary>
@@ -302,6 +311,47 @@ public static class ScreenSaverCommandLineParser
         {
             mode = PowerManagementMode.KeepSystemAndDisplayAwake;
             return true;
+        }
+
+        return false;
+    }
+
+
+    /// <summary>
+    /// Parses the optional Amber Feed JSON configuration path.
+    /// </summary>
+    /// <remarks>
+    /// The parser only records the path. Loading and validating the file is handled by
+    /// the effects layer so the core project remains free of JSON and file-system logic.
+    /// </remarks>
+    private static bool TryParseAmberFeedConfigurationPath(string argument, out string configurationPath)
+    {
+        configurationPath = "config/feeds.json";
+
+        string[] prefixes =
+        [
+            "feeds:",
+            "feeds=",
+            "feed-config:",
+            "feed-config=",
+            "rss-config:",
+            "rss-config=",
+            "rss:",
+            "rss="
+        ];
+
+        foreach (string prefix in prefixes)
+        {
+            if (argument.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                string value = argument[prefix.Length..].Trim();
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    configurationPath = value;
+                    return true;
+                }
+            }
         }
 
         return false;

@@ -167,22 +167,23 @@ The project should first become a small, stable, visually useful screensaver lab
 
 ## Amber Feed design note
 
-V0.4.0 adds `AmberFeedEffect` as a renderer-only prototype. It intentionally does not download real RSS feeds yet.
+V0.4.1 keeps `AmberFeedEffect` as a non-networked renderer and adds JSON configuration loading for feed source definitions. It intentionally does not download real RSS feeds yet.
 
-The planned production split is:
+The current and planned production split is:
 
 ```text
 Sasd.ScreenSaverLab.Effects
   AmberFeedEffect
     Draws feed-style items, scanlines, amber terminal frame and animation.
 
-Sasd.ScreenSaverLab.Core
-  FeedItem
-  FeedConfiguration
-  IFeedService
+Sasd.ScreenSaverLab.Effects.Feeds
+  AmberFeedConfiguration
+  AmberFeedConfigurationLoader
+  AmberFeedDisplayItem
 
-Sasd.ScreenSaverLab.Infrastructure or App
-  FeedConfigurationLoader
+Future Sasd.ScreenSaverLab.Core or Infrastructure
+  FeedItem
+  IFeedService
   RssFeedService
   FeedCache
 ```

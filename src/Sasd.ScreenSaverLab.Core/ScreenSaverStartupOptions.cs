@@ -36,6 +36,9 @@ namespace Sasd.ScreenSaverLab.Core;
 /// awake while the screensaver host is running. The default respects the active
 /// Windows power plan.
 /// </param>
+/// <param name="AmberFeedConfigurationPath">
+/// Path to the Amber Feed JSON configuration file. The default is <c>config/feeds.json</c>.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
@@ -46,7 +49,8 @@ public sealed record ScreenSaverStartupOptions(
     bool ShowClockOverlay = true,
     string EffectName = "star-drift",
     bool ShowHelp = false,
-    PowerManagementMode PowerManagementMode = PowerManagementMode.AllowSleep)
+    PowerManagementMode PowerManagementMode = PowerManagementMode.AllowSleep,
+    string AmberFeedConfigurationPath = "config/feeds.json")
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.
