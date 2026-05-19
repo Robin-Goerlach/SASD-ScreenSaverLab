@@ -29,7 +29,7 @@ public static class BuiltInScreenSaverEffects
 
         return normalized switch
         {
-            "digital-rain" or "rain" or "code-rain" or "matrix" => new DigitalRainEffect(),
+            "data-stream" or "datastream" or "data" or "stream" or "cipherfall" or "cipher" => new DataStreamEffect(),
             "star-drift" or "star" or "stars" => new StarDriftEffect(),
 
             // Unknown names intentionally fall back to the safe default. This prevents
@@ -43,7 +43,7 @@ public static class BuiltInScreenSaverEffects
     /// </summary>
     public static string GetSupportedEffectsText()
     {
-        return "star-drift, digital-rain";
+        return "star-drift, data-stream";
     }
 
     /// <summary>

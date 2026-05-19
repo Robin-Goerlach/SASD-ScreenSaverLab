@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.2 prototype**
+Version: **V0.2.1 prototype**
 
 Implemented:
 
@@ -16,13 +16,14 @@ Implemented:
 - A modular effect interface
 - Built-in effect selection via command-line arguments
 - `StarDriftEffect`
-- `DigitalRainEffect`
+- `DataStreamEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
 - Exit on keyboard, mouse button, or noticeable mouse movement
 - Configurable clock overlay via command-line arguments
 - Repository-ready README with screenshot
+- Manpage-like `/help` command-line reference
 - Initial GitHub Actions build workflow
 - Initial project documentation
 
@@ -58,6 +59,7 @@ SASD-ScreenSaverLab/
     040_Effect_Ideas.md
     050_GitHub_Repository_Setup.md
     060_Configuration.md
+    070_Command_Line_Reference.md
     screenshots/
       sasd-screensaverlab-star-drift.png
   src/
@@ -86,10 +88,10 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.2 contains two built-in effects:
+V0.2.1 contains two built-in effects:
 
 - `star-drift`
-- `digital-rain`
+- `data-stream`
 
 Useful examples:
 
@@ -97,11 +99,12 @@ Useful examples:
 # Default effect.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:star-drift
 
-# New V0.2 effect.
-dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:digital-rain
+# Data Stream effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:data-stream
 
-# Short alias for Digital Rain.
-dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /rain
+# Short aliases for Data Stream.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /data
 ```
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
@@ -122,11 +125,32 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 # Start one fullscreen window on every connected monitor.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens
 
-# Digital Rain on all monitors without clock overlay.
-dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /effect:digital-rain /no-clock
+# Data Stream on all monitors without clock overlay.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /effect:data-stream /no-clock
 ```
 
 For the later real Windows screensaver mode (`/s`), the application is prepared to cover all connected monitors.
+
+### Command-line help
+
+V0.2.1 adds a short manpage-like command-line reference.
+
+```powershell
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /help
+```
+
+Supported help aliases:
+
+```text
+/help
+/?
+-h
+--help
+/man
+/usage
+```
+
+See [`docs/070_Command_Line_Reference.md`](docs/070_Command_Line_Reference.md) for the same information in Markdown form.
 
 ### Clock overlay
 
@@ -150,7 +174,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.2 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.2.1 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

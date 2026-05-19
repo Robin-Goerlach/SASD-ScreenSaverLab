@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Sasd.ScreenSaverLab.Core;
 using Sasd.ScreenSaverLab.Effects;
 
@@ -18,10 +15,16 @@ internal static class Program
 
         ScreenSaverStartupOptions options = ScreenSaverCommandLineParser.Parse(args);
 
+        if (options.ShowHelp)
+        {
+            CommandLineHelpText.Show();
+            return;
+        }
+
         if (options.Mode == ScreenSaverMode.Configure)
         {
             MessageBox.Show(
-                $"SASD ScreenSaver Lab V0.2\n\nA graphical configuration dialog will be added in a later version.\n\nFor now, use command-line options such as /clock, /no-clock, /effect:star-drift or /effect:digital-rain.\n\nSupported effects: {BuiltInScreenSaverEffects.GetSupportedEffectsText()}",
+                $"SASD ScreenSaver Lab V0.2.1\n\nA graphical configuration dialog will be added in a later version.\n\nFor now, use command-line options such as /clock, /no-clock, /effect:star-drift or /effect:data-stream.\n\nRun with /help to show the command-line reference.\n\nSupported effects: {BuiltInScreenSaverEffects.GetSupportedEffectsText()}",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -31,7 +34,7 @@ internal static class Program
         if (options.Mode == ScreenSaverMode.Preview)
         {
             MessageBox.Show(
-                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.2 prototype.",
+                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.2.1 prototype.",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

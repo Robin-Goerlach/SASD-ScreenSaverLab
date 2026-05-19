@@ -27,6 +27,10 @@ namespace Sasd.ScreenSaverLab.Core;
 /// Gets the requested built-in effect name or alias. The application project resolves this
 /// value to an effect implementation through the built-in effect factory.
 /// </param>
+/// <param name="ShowHelp">
+/// When true, the application prints/displays the command-line help and exits without
+/// starting a screensaver window.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
@@ -35,7 +39,8 @@ public sealed record ScreenSaverStartupOptions(
     bool UseAllScreens = false,
     bool UsePrimaryScreen = false,
     bool ShowClockOverlay = true,
-    string EffectName = "star-drift")
+    string EffectName = "star-drift",
+    bool ShowHelp = false)
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.

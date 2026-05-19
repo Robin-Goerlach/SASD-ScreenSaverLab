@@ -42,23 +42,32 @@ Implemented:
 - `ShowClockOverlay` startup option
 - configuration documentation
 
-### V0.2 — Digital Rain and built-in effect selection
+### V0.2 — Data Stream and built-in effect selection
 
 Implemented:
 
-- `DigitalRainEffect`
+- first data-flow glyph effect, now named `DataStreamEffect`
 - `BuiltInScreenSaverEffects` factory
 - `EffectName` startup option
-- `/effect:star-drift`, `/effect:digital-rain`, `/rain` and related aliases
+- `/effect:star-drift`, `/effect:data-stream`, `/stream` and related aliases
+
+### V0.2.1 — Manpage-like help output and naming cleanup
+
+Implemented:
+
+- `/help`, `/?`, `-h`, `--help`, `/man` and `/usage`
+- manpage-like command-line help text
+- `docs/070_Command_Line_Reference.md`
+- renamed the second effect concept to Data Stream to avoid misleading expectations and avoid close imitation of known film visuals
 
 ## Next recommended versions
 
-### V0.2.1 — Small effect cleanup
+### V0.2.2 — Small effect cleanup
 
 Possible improvements:
 
-- tune Digital Rain speed and density after testing on a real monitor
-- add a screenshot for Digital Rain
+- tune Data Stream speed and density after testing on a real monitor
+- add a screenshot for Data Stream
 - add parser tests once a test project exists
 
 ### V0.3 — Light Trails effect

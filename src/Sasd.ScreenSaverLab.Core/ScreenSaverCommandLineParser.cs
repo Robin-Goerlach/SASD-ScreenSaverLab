@@ -5,11 +5,10 @@ namespace Sasd.ScreenSaverLab.Core;
 /// </summary>
 /// <remarks>
 /// Windows commonly starts screensavers with arguments such as <c>/s</c>, <c>/c</c> or
-/// <c>/p HWND</c>. This parser also understands a few developer-friendly arguments for
+/// <c>/p HWND</c>. This parser also understands developer-friendly arguments for
 /// multi-monitor testing, for example <c>/screen:1</c>, <c>/primary</c> and
-/// <c>/all-screens</c>. V0.1.3 added simple overlay configuration arguments such as
-/// <c>/no-clock</c> and <c>/clock:off</c>. V0.2 adds built-in effect selection via
-/// <c>/effect:digital-rain</c> or short aliases such as <c>/rain</c>.
+/// <c>/all-screens</c>. It also supports overlay configuration, built-in effect selection
+/// and a manpage-like <c>/help</c> output.
 /// </remarks>
 public static class ScreenSaverCommandLineParser
 {
@@ -33,10 +32,17 @@ public static class ScreenSaverCommandLineParser
         bool usePrimaryScreen = false;
         bool showClockOverlay = true;
         string effectName = "star-drift";
+        bool showHelp = false;
 
         for (int i = 0; i < args.Length; i++)
         {
             string current = NormalizeArgument(args[i]);
+
+            if (IsHelpArgument(current))
+            {
+                showHelp = true;
+                continue;
+            }
 
             if (current == "s")
             {
@@ -124,7 +130,8 @@ public static class ScreenSaverCommandLineParser
             useAllScreens,
             usePrimaryScreen,
             showClockOverlay,
-            effectName);
+            effectName,
+            showHelp);
     }
 
     /// <summary>
@@ -136,6 +143,14 @@ public static class ScreenSaverCommandLineParser
             .Trim()
             .TrimStart('/', '-')
             .ToLowerInvariant();
+    }
+
+    /// <summary>
+    /// Detects arguments that should show the command-line help.
+    /// </summary>
+    private static bool IsHelpArgument(string argument)
+    {
+        return argument is "help" or "?" or "h" or "man" or "usage";
     }
 
     /// <summary>
@@ -193,9 +208,14 @@ public static class ScreenSaverCommandLineParser
             return true;
         }
 
-        if (argument is "rain" or "digital-rain" or "code-rain" or "matrix" or "effect:rain" or "effect=rain" or "effect:digital-rain" or "effect=digital-rain" or "effect:code-rain" or "effect=code-rain")
+        if (argument is "data" or "stream" or "datastream" or "data-stream" or "cipher" or "cipherfall"
+            or "effect:data" or "effect=data"
+            or "effect:stream" or "effect=stream"
+            or "effect:datastream" or "effect=datastream"
+            or "effect:data-stream" or "effect=data-stream"
+            or "effect:cipherfall" or "effect=cipherfall")
         {
-            effectName = "digital-rain";
+            effectName = "data-stream";
             return true;
         }
 

@@ -12,9 +12,9 @@ Purpose:
 - provide a pleasant first screensaver,
 - keep V0.1 small and readable.
 
-### Digital Rain
+### Data Stream
 
-A SASD code-rain effect with falling technical glyph streams.
+A SASD data-flow effect with falling technical glyph streams.
 
 Purpose:
 

@@ -43,7 +43,7 @@ The core project does not instantiate concrete effects.
 The effects project owns visual implementations:
 
 - `StarDriftEffect`,
-- `DigitalRainEffect`,
+- `DataStreamEffect`,
 - `BuiltInScreenSaverEffects`.
 
 `BuiltInScreenSaverEffects` is a small built-in factory, not an external plugin loader.
@@ -84,8 +84,8 @@ V0.2 adds command-line effect selection:
 
 ```text
 /effect:star-drift
-/effect:digital-rain
-/rain
+/effect:data-stream
+/stream
 /star
 ```
 

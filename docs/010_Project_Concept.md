@@ -50,7 +50,7 @@ The project should not copy:
 - recognisable commercial characters,
 - exact animation sequences.
 
-Instead, the project should create original SASD-style effects such as `StarDrift`, `LightSticks`, `DigitalRain`, `NebulaCloud`, or `MagnetField`.
+Instead, the project should create original SASD-style effects such as `StarDrift`, `DataStream`, `LightSticks`, `NebulaCloud`, or `MagnetField`.
 
 ## 5. Initial product idea
 
