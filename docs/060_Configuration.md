@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.3.0 intentionally uses command-line configuration only. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.4.0 intentionally still uses command-line configuration for effect selection and includes an initial `config/feeds.json` preview for future RSS sources. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -165,3 +165,48 @@ public sealed record ScreenSaverSettings(
 ```
 
 The settings could later be stored as JSON in the user's application data directory.
+
+
+## Amber Feed configuration preview
+
+V0.4.0 includes an example feed configuration file:
+
+```text
+config/feeds.json
+```
+
+The file is not read by the application yet. It documents the planned shape for configurable RSS/Atom sources.
+
+Example keys:
+
+```json
+{
+  "refreshMinutes": 15,
+  "maxItemsPerFeed": 10,
+  "useDemoItemsWhenOffline": true,
+  "theme": "amber",
+  "feeds": [
+    {
+      "name": "Heise Security",
+      "url": "https://www.heise.de/security/rss/news-atom.xml",
+      "enabled": true
+    }
+  ]
+}
+```
+
+Amber Feed command-line aliases:
+
+```text
+/effect:amber-feed
+/effect=amber-feed
+/amber
+/feed
+/retro-feed
+```
+
+Useful test command:
+
+```powershell
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /amber /no-clock
+```

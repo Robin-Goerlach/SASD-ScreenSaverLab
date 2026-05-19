@@ -31,6 +31,7 @@ public static class BuiltInScreenSaverEffects
         {
             "data-stream" or "datastream" or "data" or "stream" or "cipherfall" or "cipher" => new DataStreamEffect(),
             "light-trails" or "lighttrail" or "light-trail" or "trails" or "trail" or "light" or "lights" => new LightTrailsEffect(),
+            "amber-feed" or "amberfeed" or "amber" or "feed" or "retro-feed" or "retrofeed" => new AmberFeedEffect(),
             "star-drift" or "star" or "stars" => new StarDriftEffect(),
 
             // Unknown names intentionally fall back to the safe default. This prevents
@@ -44,7 +45,7 @@ public static class BuiltInScreenSaverEffects
     /// </summary>
     public static string GetSupportedEffectsText()
     {
-        return "star-drift, data-stream, light-trails";
+        return "star-drift, data-stream, light-trails, amber-feed";
     }
 
     /// <summary>

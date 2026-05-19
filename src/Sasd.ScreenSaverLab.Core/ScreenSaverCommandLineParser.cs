@@ -240,6 +240,18 @@ public static class ScreenSaverCommandLineParser
             return true;
         }
 
+
+        if (argument is "amber" or "feed" or "amber-feed" or "amberfeed" or "retro-feed" or "retrofeed"
+            or "effect:amber" or "effect=amber"
+            or "effect:feed" or "effect=feed"
+            or "effect:amber-feed" or "effect=amber-feed"
+            or "effect:amberfeed" or "effect=amberfeed"
+            or "effect:retro-feed" or "effect=retro-feed")
+        {
+            effectName = "amber-feed";
+            return true;
+        }
+
         string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
 
         foreach (string prefix in prefixes)

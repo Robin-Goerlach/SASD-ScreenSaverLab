@@ -89,10 +89,13 @@ V0.2 added command-line effect selection. V0.3 extends the built-in effect list:
 /effect:star-drift
 /effect:data-stream
 /effect:light-trails
+/effect:amber-feed
 /star
 /stream
 /light
 /trails
+/amber
+/feed
 ```
 
 The parser stores the requested name in `ScreenSaverStartupOptions.EffectName`.
@@ -160,3 +163,28 @@ The following are intentionally postponed:
 - audio analysis.
 
 The project should first become a small, stable, visually useful screensaver lab.
+
+
+## Amber Feed design note
+
+V0.4.0 adds `AmberFeedEffect` as a renderer-only prototype. It intentionally does not download real RSS feeds yet.
+
+The planned production split is:
+
+```text
+Sasd.ScreenSaverLab.Effects
+  AmberFeedEffect
+    Draws feed-style items, scanlines, amber terminal frame and animation.
+
+Sasd.ScreenSaverLab.Core
+  FeedItem
+  FeedConfiguration
+  IFeedService
+
+Sasd.ScreenSaverLab.Infrastructure or App
+  FeedConfigurationLoader
+  RssFeedService
+  FeedCache
+```
+
+The important design rule is that visual effects should not block on network I/O. A future feed service should load feeds asynchronously or ahead of time, apply timeouts, and provide cached items to the effect.

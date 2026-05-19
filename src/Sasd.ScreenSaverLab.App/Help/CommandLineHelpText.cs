@@ -58,7 +58,7 @@ DESCRIPTION
     visualizer playground for Windows.
 
     It provides a modular fullscreen host for original animated effects,
-    currently Star Drift, Data Stream and Light Trails.
+    currently Star Drift, Data Stream, Light Trails and Amber Feed.
 
 OPTIONS
     /help, /?, -h, --help
@@ -87,6 +87,7 @@ OPTIONS
             star-drift
             data-stream
             light-trails
+            amber-feed
 
     /star
         Shortcut for /effect:star-drift.
@@ -96,6 +97,9 @@ OPTIONS
 
     /light, /trails
         Shortcuts for /effect:light-trails.
+
+    /amber, /feed
+        Shortcuts for /effect:amber-feed.
 
     /clock, /clock:on, /clock:true, /show-clock
         Show the clock/date/effect-name overlay. This is the default.
@@ -127,6 +131,10 @@ EFFECTS
     light-trails
         Soft glowing light trails moving across a calm visualizer field.
 
+    amber-feed
+        Amber retro terminal feed display with demo headlines. Real RSS
+        retrieval and feed caching are planned for a later iteration.
+
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
 
@@ -135,6 +143,8 @@ EXAMPLES
     Sasd.ScreenSaverLab.App.exe /all-screens /effect:data-stream
 
     Sasd.ScreenSaverLab.App.exe /light /no-clock
+
+    Sasd.ScreenSaverLab.App.exe /amber /no-clock
 
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
@@ -145,7 +155,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.3.0
+    0.4.0
 
 AUTHOR
     SASD - Scientific and Software Development

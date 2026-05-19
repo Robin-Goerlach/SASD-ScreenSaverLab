@@ -1,0 +1,23 @@
+{
+  "refreshMinutes": 15,
+  "maxItemsPerFeed": 10,
+  "useDemoItemsWhenOffline": true,
+  "theme": "amber",
+  "feeds": [
+    {
+      "name": "Heise Security",
+      "url": "https://www.heise.de/security/rss/news-atom.xml",
+      "enabled": true
+    },
+    {
+      "name": "Tagesschau",
+      "url": "https://www.tagesschau.de/xml/rss2/",
+      "enabled": true
+    },
+    {
+      "name": "NASA News",
+      "url": "https://www.nasa.gov/news-release/feed/",
+      "enabled": false
+    }
+  ]
+}

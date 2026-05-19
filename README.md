@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.3.0 prototype**
+Version: **V0.4.0 prototype**
 
 Implemented:
 
@@ -18,6 +18,7 @@ Implemented:
 - `StarDriftEffect`
 - `DataStreamEffect`
 - `LightTrailsEffect`
+- `AmberFeedEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
@@ -37,6 +38,7 @@ Not yet implemented:
 - Friendly configuration UI for monitor, overlay and effect selection
 - Audio-reactive visualizer mode
 - Plugin loading from external assemblies
+- Real RSS/Atom retrieval for `AmberFeedEffect`
 
 ## Intended technology stack
 
@@ -63,8 +65,11 @@ SASD-ScreenSaverLab/
     060_Configuration.md
     070_Command_Line_Reference.md
     080_Power_Management.md
+    090_Amber_Feed.md
     screenshots/
       sasd-screensaverlab-star-drift.png
+  config/
+    feeds.json
   src/
     Sasd.ScreenSaverLab.App/
     Sasd.ScreenSaverLab.Core/
@@ -91,11 +96,12 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.3.0 contains three built-in effects:
+V0.4.0 contains four built-in effects:
 
 - `star-drift`
 - `data-stream`
 - `light-trails`
+- `amber-feed`
 
 Useful examples:
 
@@ -116,9 +122,30 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 # Short aliases for Light Trails.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /light
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /trails
+
+# Amber Feed retro terminal effect with demo feed items.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:amber-feed
+
+# Short aliases for Amber Feed.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /amber
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /feed
 ```
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
+
+### Amber Feed configuration preview
+
+V0.4.0 adds `AmberFeedEffect`, a retro terminal display for feed-style messages. The current implementation uses built-in demo items so the visual effect can be tested without network access.
+
+The planned RSS sources are represented by the example configuration file:
+
+```text
+config/feeds.json
+```
+
+Real RSS/Atom loading, cache handling and timeout-safe feed updates are planned for the next Amber Feed iteration.
+
+See [`docs/090_Amber_Feed.md`](docs/090_Amber_Feed.md) for details.
 
 ### Multi-monitor startup
 
@@ -206,7 +233,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.3.0 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.4.0 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

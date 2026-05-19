@@ -135,3 +135,45 @@ The following ideas are intentionally deferred:
 - asset-heavy aquarium-like effects
 
 These ideas are interesting, but they should not block a robust and understandable first version.
+
+
+### V0.4 — Amber Feed effect
+
+Status: implemented as V0.4.0 prototype.
+
+Goal: add a useful retro terminal-style feed display while keeping network access out of the rendering code for now.
+
+Implemented in V0.4.0:
+
+- `AmberFeedEffect`
+- amber monochrome terminal look
+- scanlines, glow, typewriter reveal, page rotation and progress bar
+- demo feed items
+- command-line aliases `/effect:amber-feed`, `/amber` and `/feed`
+- initial `config/feeds.json` example file
+- dedicated Amber Feed design note
+
+Deferred:
+
+- reading the JSON configuration file
+- RSS/Atom download service
+- cache and timeout handling
+- configurable terminal themes
+
+### V0.4.1 — Feed configuration loading
+
+Planned next step:
+
+- parse `config/feeds.json`
+- validate feed entries
+- expose feed settings to the application layer
+- keep demo mode as safe fallback
+
+### V0.4.2 — RSS/Atom retrieval and cache
+
+Planned next step:
+
+- download feeds with timeouts
+- convert RSS/Atom entries into internal feed items
+- cache last successful result
+- keep rendering cached or demo items when offline

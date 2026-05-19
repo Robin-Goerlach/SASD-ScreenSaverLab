@@ -70,3 +70,10 @@ Reasons:
 Effect names should be original and SASD-compatible.
 
 Avoid names that sound like direct copies of commercial screensavers or media franchises.
+
+
+## Amber Feed
+
+A useful retro-terminal information display. The effect uses a dark amber monochrome look, scanlines, terminal frame, typewriter-style text reveal and rotating feed pages.
+
+V0.4.0 renders demo messages. Later versions should read RSS/Atom sources from `config/feeds.json`, cache results and fall back to demo messages while offline.
