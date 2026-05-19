@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon></ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sasd.ScreenSaverLab.Core\Sasd.ScreenSaverLab.Core.csproj" />
+    <ProjectReference Include="..\Sasd.ScreenSaverLab.Effects\Sasd.ScreenSaverLab.Effects.csproj" />
+  </ItemGroup>
+</Project>

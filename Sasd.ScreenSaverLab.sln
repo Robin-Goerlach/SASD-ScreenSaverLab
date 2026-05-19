@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sasd.ScreenSaverLab.App", "src\Sasd.ScreenSaverLab.App\Sasd.ScreenSaverLab.App.csproj", "{AF33F3B6-C46D-4C9A-B77E-5E47C0169C4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sasd.ScreenSaverLab.Core", "src\Sasd.ScreenSaverLab.Core\Sasd.ScreenSaverLab.Core.csproj", "{4805D5DA-772E-4D80-88D5-6930D66F6518}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sasd.ScreenSaverLab.Effects", "src\Sasd.ScreenSaverLab.Effects\Sasd.ScreenSaverLab.Effects.csproj", "{E8DC9881-844C-42B6-8342-C3F8D780DCD1}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {AF33F3B6-C46D-4C9A-B77E-5E47C0169C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {AF33F3B6-C46D-4C9A-B77E-5E47C0169C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {AF33F3B6-C46D-4C9A-B77E-5E47C0169C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {AF33F3B6-C46D-4C9A-B77E-5E47C0169C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+        {4805D5DA-772E-4D80-88D5-6930D66F6518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {4805D5DA-772E-4D80-88D5-6930D66F6518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {4805D5DA-772E-4D80-88D5-6930D66F6518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {4805D5DA-772E-4D80-88D5-6930D66F6518}.Release|Any CPU.Build.0 = Release|Any CPU
+        {E8DC9881-844C-42B6-8342-C3F8D780DCD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {E8DC9881-844C-42B6-8342-C3F8D780DCD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {E8DC9881-844C-42B6-8342-C3F8D780DCD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {E8DC9881-844C-42B6-8342-C3F8D780DCD1}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
+EndGlobal
