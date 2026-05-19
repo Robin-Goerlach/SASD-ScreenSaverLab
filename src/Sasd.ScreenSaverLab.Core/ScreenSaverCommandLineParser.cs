@@ -7,7 +7,8 @@ namespace Sasd.ScreenSaverLab.Core;
 /// Windows commonly starts screensavers with arguments such as <c>/s</c>, <c>/c</c> or
 /// <c>/p HWND</c>. This parser also understands a few developer-friendly arguments for
 /// multi-monitor testing, for example <c>/screen:1</c>, <c>/primary</c> and
-/// <c>/all-screens</c>.
+/// <c>/all-screens</c>. V0.1.3 adds simple overlay configuration arguments such as
+/// <c>/no-clock</c> and <c>/clock:off</c>.
 /// </remarks>
 public static class ScreenSaverCommandLineParser
 {
@@ -29,6 +30,7 @@ public static class ScreenSaverCommandLineParser
         bool useMouseScreen = true;
         bool useAllScreens = false;
         bool usePrimaryScreen = false;
+        bool showClockOverlay = true;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -91,6 +93,12 @@ public static class ScreenSaverCommandLineParser
                 continue;
             }
 
+            if (TryParseClockOverlayOption(current, out bool parsedShowClockOverlay))
+            {
+                showClockOverlay = parsedShowClockOverlay;
+                continue;
+            }
+
             if (TryParseScreenIndex(current, out int parsedScreenIndex))
             {
                 targetScreenIndex = parsedScreenIndex;
@@ -106,7 +114,8 @@ public static class ScreenSaverCommandLineParser
             targetScreenIndex,
             useMouseScreen,
             useAllScreens,
-            usePrimaryScreen);
+            usePrimaryScreen,
+            showClockOverlay);
     }
 
     /// <summary>
@@ -118,6 +127,50 @@ public static class ScreenSaverCommandLineParser
             .Trim()
             .TrimStart('/', '-')
             .ToLowerInvariant();
+    }
+
+    /// <summary>
+    /// Parses supported clock overlay argument formats.
+    /// </summary>
+    /// <remarks>
+    /// Supported examples:
+    /// <list type="bullet">
+    /// <item><description><c>/clock</c>, <c>/show-clock</c>, <c>/clock:on</c>, <c>/clock=true</c></description></item>
+    /// <item><description><c>/no-clock</c>, <c>/hide-clock</c>, <c>/clock:off</c>, <c>/clock=false</c></description></item>
+    /// </list>
+    /// </remarks>
+    private static bool TryParseClockOverlayOption(string argument, out bool showClockOverlay)
+    {
+        showClockOverlay = true;
+
+        if (argument is "clock" or "show-clock" or "with-clock")
+        {
+            showClockOverlay = true;
+            return true;
+        }
+
+        if (argument is "no-clock" or "hide-clock" or "without-clock")
+        {
+            showClockOverlay = false;
+            return true;
+        }
+
+        string[] enabledValues = ["clock:on", "clock=on", "clock:true", "clock=true", "showclock:on", "showclock=true"];
+        string[] disabledValues = ["clock:off", "clock=off", "clock:false", "clock=false", "showclock:off", "showclock=false"];
+
+        if (enabledValues.Contains(argument, StringComparer.OrdinalIgnoreCase))
+        {
+            showClockOverlay = true;
+            return true;
+        }
+
+        if (disabledValues.Contains(argument, StringComparer.OrdinalIgnoreCase))
+        {
+            showClockOverlay = false;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ internal static class Program
         if (options.Mode == ScreenSaverMode.Configure)
         {
             MessageBox.Show(
-                "SASD ScreenSaver Lab V0.1.1\n\nA configuration dialog will be added in a later version.",
+                "SASD ScreenSaver Lab V0.1.3\n\nA graphical configuration dialog will be added in a later version.\n\nFor now, use command-line options such as /clock or /no-clock.",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -31,7 +31,7 @@ internal static class Program
         if (options.Mode == ScreenSaverMode.Preview)
         {
             MessageBox.Show(
-                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.1.1 prototype.",
+                "Preview mode is parsed but not implemented yet.\n\nPlease run the application normally for the V0.1.3 prototype.",
                 "SASD ScreenSaver Lab",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -45,6 +45,7 @@ internal static class Program
         Application.Run(new ScreenSaverApplicationContext(
             targetScreens,
             effectFactory: static () => new StarDriftEffect(),
-            clock: new SystemEffectClock()));
+            clock: new SystemEffectClock(),
+            showClockOverlay: options.ShowClockOverlay));
     }
 }

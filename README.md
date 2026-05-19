@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.1.2 prototype**
+Version: **V0.1.3 prototype**
 
 Implemented:
 
@@ -19,7 +19,7 @@ Implemented:
 - Multi-monitor-aware startup
 - Basic render loop
 - Exit on keyboard, mouse button, or noticeable mouse movement
-- Simple clock overlay
+- Configurable clock overlay via command-line arguments
 - Repository-ready README with screenshot
 - Initial GitHub Actions build workflow
 - Initial project documentation
@@ -30,7 +30,7 @@ Not yet implemented:
 - Configuration dialog
 - Windows preview mode for the screensaver settings panel
 - Multiple selectable effects
-- Friendly configuration UI for monitor and effect selection
+- Friendly configuration UI for monitor, overlay and effect selection
 - Audio-reactive visualizer mode
 - Plugin loading from external assemblies
 
@@ -56,6 +56,7 @@ SASD-ScreenSaverLab/
     030_Technical_Design.md
     040_Effect_Ideas.md
     050_GitHub_Repository_Setup.md
+    060_Configuration.md
     screenshots/
       sasd-screensaverlab-star-drift.png
   src/
@@ -100,6 +101,26 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 ```
 
 For the later real Windows screensaver mode (`/s`), the application is prepared to cover all connected monitors.
+
+### Clock overlay
+
+V0.1.3 can show or hide the built-in clock/date/effect-name overlay via command-line arguments. The overlay is enabled by default.
+
+Useful examples:
+
+```powershell
+# Start with the clock overlay enabled. This is also the default.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /clock
+
+# Start without the clock/date/effect-name overlay.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /no-clock
+
+# Equivalent explicit forms.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /clock:on
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /clock:off
+```
+
+The current implementation keeps this deliberately simple. A graphical settings dialog can later write the same option into a persistent configuration file.
 
 ## Design principle
 

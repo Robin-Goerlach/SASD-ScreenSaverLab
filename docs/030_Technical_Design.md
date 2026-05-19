@@ -11,12 +11,13 @@ Sasd.ScreenSaverLab.App
   Multi-monitor screen selection
   Render loop
   Input handling
-  Clock overlay
+  Optional clock overlay
 
 Sasd.ScreenSaverLab.Core
   Shared interfaces and runtime helpers
   Effect contract
   Command-line parsing
+  Startup options, including overlay settings
 
 Sasd.ScreenSaverLab.Effects
   Built-in visual effects
@@ -35,7 +36,7 @@ The app project owns the Windows-specific behavior:
 - react to keyboard and mouse input,
 - run a timer-based animation loop,
 - call the currently selected effect,
-- draw optional overlays.
+- draw optional overlays, including the currently configurable clock/date overlay.
 
 The app project should not contain the actual animation logic of each effect.
 
@@ -83,7 +84,7 @@ During repaint:
 
 1. clear the background,
 2. render the active effect,
-3. draw optional overlay elements.
+3. draw optional overlay elements if enabled.
 
 This is not a high-end game loop, but it is sufficient for V0.1 and easy to understand.
 
@@ -144,10 +145,25 @@ The startup behavior is:
 
 A small `ScreenSaverApplicationContext` manages several forms and closes all screensaver windows when the user exits from any monitor.
 
-## 8. Known technical limitations
+## 8. Overlay configuration
+
+V0.1.3 keeps configuration intentionally lightweight. The clock/date/effect-name overlay is controlled by `ScreenSaverStartupOptions.ShowClockOverlay`. The command-line parser understands arguments such as:
+
+- `/clock`
+- `/show-clock`
+- `/no-clock`
+- `/hide-clock`
+- `/clock:on`
+- `/clock:off`
+
+The fullscreen form receives this boolean option from `ScreenSaverApplicationContext` and simply skips `DrawOverlay()` when the overlay is disabled. This keeps the visual effect classes independent from host-level UI decisions.
+
+A later settings dialog should not duplicate overlay logic. It should write persistent settings and let startup code populate the same `ScreenSaverStartupOptions` model.
+
+## 9. Known technical limitations
 
 - The render loop is timer-based, not a dedicated high-precision game loop.
 - `System.Drawing` / GDI+ is sufficient for V0.1, but not ideal for advanced particle effects.
-- The current version has no persistent settings.
+- The current version has command-line options but no persistent settings file yet.
 - The project has not yet been converted into a real `.scr` screensaver file.
 - Windows preview mode is parsed but not yet rendered inside the preview handle.

@@ -22,6 +22,7 @@ public sealed class ScreenSaverForm : Form
     private readonly IScreenSaverEffect _effect;
     private readonly IEffectClock _clock;
     private readonly Screen _targetScreen;
+    private readonly bool _showClockOverlay;
     private readonly Action _requestExit;
     private readonly System.Windows.Forms.Timer _timer;
     private readonly Stopwatch _stopwatch = new();
@@ -36,6 +37,10 @@ public sealed class ScreenSaverForm : Form
     /// <param name="effect">The visual effect rendered by this host.</param>
     /// <param name="clock">Clock abstraction used by the overlay.</param>
     /// <param name="targetScreen">The monitor on which this form should be displayed.</param>
+    /// <param name="showClockOverlay">
+    /// When true, the form draws the built-in clock/date/effect-name overlay.
+    /// When false, only the active visual effect is rendered.
+    /// </param>
     /// <param name="requestExit">
     /// Callback used to close all screensaver windows. This is important when the app
     /// runs on several monitors at the same time.
@@ -44,11 +49,13 @@ public sealed class ScreenSaverForm : Form
         IScreenSaverEffect effect,
         IEffectClock clock,
         Screen targetScreen,
+        bool showClockOverlay,
         Action requestExit)
     {
         _effect = effect ?? throw new ArgumentNullException(nameof(effect));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _targetScreen = targetScreen ?? throw new ArgumentNullException(nameof(targetScreen));
+        _showClockOverlay = showClockOverlay;
         _requestExit = requestExit ?? throw new ArgumentNullException(nameof(requestExit));
 
         _timer = new System.Windows.Forms.Timer
@@ -153,7 +160,7 @@ public sealed class ScreenSaverForm : Form
 
         if (_isInitialized)
         {
-            // Reinitialize the effect after a resize. This keeps V0.1.1 simple and avoids
+            // Reinitialize the effect after a resize. This keeps V0.1.3 simple and avoids
             // partially off-screen particles after monitor or window size changes.
             _effect.Initialize(ClientSize);
         }
@@ -221,10 +228,15 @@ public sealed class ScreenSaverForm : Form
     }
 
     /// <summary>
-    /// Draws small informational overlay text. This can become configurable later.
+    /// Draws small informational overlay text if the clock overlay is enabled.
     /// </summary>
     private void DrawOverlay(Graphics graphics)
     {
+        if (!_showClockOverlay)
+        {
+            return;
+        }
+
         DateTime now = _clock.Now;
 
         string timeText = now.ToString("HH:mm");

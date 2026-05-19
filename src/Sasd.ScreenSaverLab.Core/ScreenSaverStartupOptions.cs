@@ -19,13 +19,18 @@ namespace Sasd.ScreenSaverLab.Core;
 /// <param name="UsePrimaryScreen">
 /// When true, the application explicitly starts on the Windows primary monitor.
 /// </param>
+/// <param name="ShowClockOverlay">
+/// When true, the host draws the built-in clock/date/effect-name overlay. When false,
+/// only the visual effect itself is rendered.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
     int? TargetScreenIndex = null,
     bool UseMouseScreen = true,
     bool UseAllScreens = false,
-    bool UsePrimaryScreen = false)
+    bool UsePrimaryScreen = false,
+    bool ShowClockOverlay = true)
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.
@@ -33,7 +38,8 @@ public sealed record ScreenSaverStartupOptions(
     /// <remarks>
     /// The default intentionally uses the monitor under the mouse pointer instead of
     /// always using the Windows primary monitor. This makes testing on a secondary
-    /// display much easier.
+    /// display much easier. The clock overlay is enabled by default because it is useful
+    /// during the early prototype phase.
     /// </remarks>
     public static ScreenSaverStartupOptions Default => new(ScreenSaverMode.Normal);
 }

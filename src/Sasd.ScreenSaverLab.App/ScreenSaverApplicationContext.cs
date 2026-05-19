@@ -25,10 +25,12 @@ public sealed class ScreenSaverApplicationContext : ApplicationContext
     /// <param name="screens">The screens that should receive a fullscreen host window.</param>
     /// <param name="effectFactory">Factory that creates one independent effect instance per screen.</param>
     /// <param name="clock">Clock abstraction used for overlays.</param>
+    /// <param name="showClockOverlay">Controls whether the built-in clock/date overlay is drawn.</param>
     public ScreenSaverApplicationContext(
         IEnumerable<Screen> screens,
         Func<IScreenSaverEffect> effectFactory,
-        IEffectClock clock)
+        IEffectClock clock,
+        bool showClockOverlay)
     {
         ArgumentNullException.ThrowIfNull(screens);
         ArgumentNullException.ThrowIfNull(effectFactory);
@@ -36,7 +38,7 @@ public sealed class ScreenSaverApplicationContext : ApplicationContext
 
         foreach (Screen screen in screens)
         {
-            ScreenSaverForm form = new(effectFactory(), clock, screen, RequestExit);
+            ScreenSaverForm form = new(effectFactory(), clock, screen, showClockOverlay, RequestExit);
             form.FormClosed += Form_FormClosed;
             _forms.Add(form);
         }
