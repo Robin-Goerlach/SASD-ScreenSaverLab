@@ -4,9 +4,9 @@
 
 `AmberFeedEffect` is the first prototype of a useful information screensaver. It presents rotating feed-style messages on a dark amber retro terminal screen inspired by 1980s monochrome monitors and teletext-like information pages.
 
-V0.4.5 keeps the strong retro look, loads RSS/Atom source definitions from `config/feeds.json`, refreshes live feed items in the background and falls back to cached or demo messages when feeds are unavailable.
+V0.5.0 keeps the strong retro look, loads RSS/Atom source definitions from `config/feeds.json`, refreshes live feed items in the background and falls back to cached or demo messages when feeds are unavailable.
 
-## Current status in V0.4.5
+## Current status in V0.5.0
 
 Implemented:
 
@@ -33,7 +33,7 @@ Still intentionally simple:
 
 - no graphical feed editor yet
 - no per-feed priority, include/exclude keywords or categories yet
-- no recurring timed refresh loop yet; V0.4.5 performs an initial background refresh
+- no recurring timed refresh loop yet; V0.5.0 performs an initial background refresh
 - no configurable themes beyond the current amber palette
 
 ## Configuration file
@@ -74,11 +74,11 @@ Example:
 }
 ```
 
-V0.4.5 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not retrieved.
+V0.5.0 validates enabled feed URLs and accepts only absolute `http` or `https` URLs. Disabled feeds stay in the configuration file but are not retrieved.
 
 ## Reading speed
 
-Amber Feed is intended to be readable from a distance, not just visually busy. V0.4.5 therefore reads display timing and page density from `config/feeds.json`:
+Amber Feed is intended to be readable from a distance, not just visually busy. V0.5.0 therefore reads display timing and page density from `config/feeds.json`:
 
 ```json
 {
@@ -153,7 +153,7 @@ Supported aliases:
 
 ## Architecture
 
-V0.4.5 keeps rendering, configuration loading, network retrieval and caching separate:
+V0.5.0 keeps rendering, configuration loading, network retrieval and caching separate:
 
 ```text
 AmberFeedEffect

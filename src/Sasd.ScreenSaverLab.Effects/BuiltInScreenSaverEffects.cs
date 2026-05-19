@@ -33,6 +33,9 @@ public static class BuiltInScreenSaverEffects
             "data-stream" or "datastream" or "data" or "stream" or "cipherfall" or "cipher" => new DataStreamEffect(),
             "light-trails" or "lighttrail" or "light-trail" or "trails" or "trail" or "light" or "lights" => new LightTrailsEffect(),
             "amber-feed" or "amberfeed" or "amber" or "feed" or "retro-feed" or "retrofeed" => new AmberFeedEffect(amberFeedConfigurationPath),
+            "wireframe-terrain" or "wireframeterrain" or "wireframe" or "wire" or "terrain" or "vector-terrain" or "grid-terrain" => new WireframeTerrainEffect(),
+            "plasma-grid" or "plasmagrid" or "plasma" or "plasma-field" or "grid" => new PlasmaGridEffect(),
+            "orbit-field" or "orbitfield" or "orbit" or "orbits" or "field" or "particle-orbit" => new OrbitFieldEffect(),
             "star-drift" or "star" or "stars" => new StarDriftEffect(),
 
             // Unknown names intentionally fall back to the safe default. This prevents
@@ -46,7 +49,7 @@ public static class BuiltInScreenSaverEffects
     /// </summary>
     public static string GetSupportedEffectsText()
     {
-        return "star-drift, data-stream, light-trails, amber-feed";
+        return "star-drift, data-stream, light-trails, amber-feed, wireframe-terrain, plasma-grid, orbit-field";
     }
 
     /// <summary>

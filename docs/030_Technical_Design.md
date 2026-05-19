@@ -189,3 +189,21 @@ Sasd.ScreenSaverLab.Effects.Feeds
 ```
 
 The important design rule is that visual effects must not block the UI thread on network I/O. Feed retrieval uses short timeouts and best-effort cache/demo fallback so a slow or broken feed cannot freeze the screensaver.
+
+## V0.5.0 built-in effect expansion
+
+V0.5.0 adds three additional asset-free effects to the built-in effect collection:
+
+- `WireframeTerrainEffect` renders a vector-style landscape using GDI+ lines, perspective mapping and simple animated mountain polylines.
+- `PlasmaGridEffect` renders a small internal bitmap buffer and scales it to the active monitor. This keeps the plasma calculation understandable and gives the effect a deliberate retro low-resolution character.
+- `OrbitFieldEffect` renders particles on calculated elliptical orbits around slow attractor points. It uses only calculated positions, pens and brushes, so it does not require external assets or shader support.
+
+The effects continue to implement the same compact `IScreenSaverEffect` lifecycle:
+
+```csharp
+void Initialize(Size viewportSize);
+void Update(TimeSpan elapsed, Size viewportSize);
+void Render(Graphics graphics, Size viewportSize);
+```
+
+This keeps the host unchanged while expanding the visual range of the project.

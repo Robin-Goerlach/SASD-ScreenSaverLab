@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.4.5 intentionally still uses command-line configuration for effect selection and now also reads `config/feeds.json` for Amber Feed RSS sources and display timing. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.5.0 intentionally still uses command-line configuration for effect selection and now also reads `config/feeds.json` for Amber Feed RSS sources and display timing. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -96,6 +96,36 @@ Supported effect arguments:
 /trails
 /lighttrail
 /light-trails
+
+/effect:wireframe-terrain
+/effect=wireframe-terrain
+/effect:wireframe
+/effect=wireframe
+/wire
+/wireframe
+/terrain
+/vector-terrain
+/grid-terrain
+
+/effect:plasma-grid
+/effect=plasma-grid
+/effect:plasma
+/effect=plasma
+/plasma
+/grid
+/plasma-grid
+/plasmagrid
+/plasma-field
+
+/effect:orbit-field
+/effect=orbit-field
+/effect:orbit
+/effect=orbit
+/orbit
+/orbits
+/field
+/orbit-field
+/orbitfield
 ```
 
 Examples:
@@ -110,6 +140,12 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /stream /no-clock
 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /light /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /terrain /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /plasma /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /orbit /no-clock
 ```
 
 Unknown effect names currently fall back to `star-drift` instead of failing at startup.
@@ -169,7 +205,7 @@ The settings could later be stored as JSON in the user's application data direct
 
 ## Amber Feed configuration
 
-V0.4.5 reads and validates the Amber Feed configuration file:
+V0.5.0 reads and validates the Amber Feed configuration file:
 
 ```text
 config/feeds.json

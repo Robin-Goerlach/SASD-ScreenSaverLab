@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.4.5 prototype**
+Version: **V0.5.0 prototype**
 
 Implemented:
 
@@ -19,6 +19,9 @@ Implemented:
 - `DataStreamEffect`
 - `LightTrailsEffect`
 - `AmberFeedEffect`
+- `WireframeTerrainEffect`
+- `PlasmaGridEffect`
+- `OrbitFieldEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
@@ -68,6 +71,7 @@ SASD-ScreenSaverLab/
     070_Command_Line_Reference.md
     080_Power_Management.md
     090_Amber_Feed.md
+    100_V050_Effect_Expansion.md
     screenshots/
       sasd-screensaverlab-star-drift.png
   config/
@@ -98,12 +102,15 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.4.5 contains four built-in effects:
+V0.5.0 contains seven built-in effects:
 
 - `star-drift`
 - `data-stream`
 - `light-trails`
 - `amber-feed`
+- `wireframe-terrain`
+- `plasma-grid`
+- `orbit-field`
 
 Useful examples:
 
@@ -131,13 +138,34 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 # Short aliases for Amber Feed.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /amber
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /feed
+
+# Wireframe Terrain effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:wireframe-terrain
+
+# Short aliases for Wireframe Terrain.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /terrain
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /wire
+
+# Plasma Grid effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:plasma-grid
+
+# Short aliases for Plasma Grid.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /plasma
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /grid
+
+# Orbit Field effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:orbit-field
+
+# Short aliases for Orbit Field.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /orbit
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /field
 ```
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
 
 ### Amber Feed RSS/Atom configuration
 
-V0.4.5 loads RSS/Atom source definitions from:
+V0.5.0 loads RSS/Atom source definitions from:
 
 ```text
 config/feeds.json
@@ -145,7 +173,7 @@ config/feeds.json
 
 The effect starts immediately with cached items, configured-source preview items or demo fallback messages. It then refreshes enabled RSS/Atom feeds in the background with a short timeout. If live retrieval fails, the terminal keeps rendering and falls back to the local cache or demo items.
 
-V0.4.5 also makes the Amber Feed reading speed and page density configurable in `config/feeds.json`:
+V0.5.0 also keeps the Amber Feed reading speed and page density configurable in `config/feeds.json`:
 
 ```json
 {
@@ -201,6 +229,9 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 # Data Stream on all monitors without clock overlay.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /effect:data-stream /no-clock
+
+# Orbit Field on all monitors without clock overlay.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /orbit /no-clock
 ```
 
 For the later real Windows screensaver mode (`/s`), the application is prepared to cover all connected monitors.
@@ -269,7 +300,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.4.5 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.5.0 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

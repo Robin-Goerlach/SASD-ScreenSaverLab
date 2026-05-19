@@ -77,3 +77,33 @@ Avoid names that sound like direct copies of commercial screensavers or media fr
 A useful retro-terminal information display. The effect uses a dark amber monochrome look, scanlines, terminal frame, typewriter-style text reveal and rotating feed pages.
 
 V0.4.5 reads RSS/Atom source definitions from `config/feeds.json`, downloads live entries in the background and caches recent items while still falling back to demo messages when offline. V0.4.5 also makes the reading speed configurable and can automatically fill the current monitor height with an appropriate number of feed entries, so the terminal can stay readable while using large screens better.
+
+### Wireframe Terrain
+
+A retro vector landscape with a moving perspective grid, low-poly mountains and a subtle horizon glow.
+
+Purpose:
+
+- add a clearly different 1980s-inspired visual style,
+- stay asset-free and GDI+-friendly,
+- provide a strong fullscreen effect for demos and screenshots.
+
+### Plasma Grid
+
+A low-resolution plasma field with a soft technical grid overlay.
+
+Purpose:
+
+- bring a classic demo-scene style into the collection,
+- test a small internal bitmap buffer that is scaled to the screen,
+- create a colorful but still restrained visual effect.
+
+### Orbit Field
+
+A scientific-looking field of orbiting particles, guide ellipses and slow attractor points.
+
+Purpose:
+
+- strengthen the scientific/SASD visual identity,
+- provide a calm effect that looks closer to a simulation or laboratory display,
+- prepare later ideas such as magnet-field or particle-system effects.

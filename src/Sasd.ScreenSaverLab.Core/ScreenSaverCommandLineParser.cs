@@ -261,6 +261,38 @@ public static class ScreenSaverCommandLineParser
             return true;
         }
 
+        if (argument is "wire" or "wireframe" or "terrain" or "wireframe-terrain" or "vector-terrain" or "grid-terrain"
+            or "effect:wire" or "effect=wire"
+            or "effect:wireframe" or "effect=wireframe"
+            or "effect:terrain" or "effect=terrain"
+            or "effect:wireframe-terrain" or "effect=wireframe-terrain"
+            or "effect:vector-terrain" or "effect=vector-terrain")
+        {
+            effectName = "wireframe-terrain";
+            return true;
+        }
+
+        if (argument is "plasma" or "grid" or "plasma-grid" or "plasmagrid" or "plasma-field"
+            or "effect:plasma" or "effect=plasma"
+            or "effect:grid" or "effect=grid"
+            or "effect:plasma-grid" or "effect=plasma-grid"
+            or "effect:plasmagrid" or "effect=plasmagrid")
+        {
+            effectName = "plasma-grid";
+            return true;
+        }
+
+        if (argument is "orbit" or "orbits" or "field" or "orbit-field" or "orbitfield" or "particle-orbit"
+            or "effect:orbit" or "effect=orbit"
+            or "effect:orbits" or "effect=orbits"
+            or "effect:field" or "effect=field"
+            or "effect:orbit-field" or "effect=orbit-field"
+            or "effect:orbitfield" or "effect=orbitfield")
+        {
+            effectName = "orbit-field";
+            return true;
+        }
+
         string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
 
         foreach (string prefix in prefixes)

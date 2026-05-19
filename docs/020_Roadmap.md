@@ -202,3 +202,15 @@ The following ideas are intentionally deferred:
 - configurable terminal themes beyond the current amber palette
 
 These ideas are interesting, but they should not block a robust and understandable first version.
+
+### V0.5.0 — Additional built-in visual effects
+
+Implemented:
+
+- `WireframeTerrainEffect` as a retro vector landscape with perspective grid motion
+- `PlasmaGridEffect` as a low-resolution plasma/demo-scene style field with technical grid overlay
+- `OrbitFieldEffect` as a scientific particle-orbit visualization with attractor field lines
+- command-line aliases for all three effects
+- updated manpage-style help and README effect list
+
+Note: The previously planned basic configuration dialog remains a later step. V0.5.0 intentionally prioritizes expanding the visual effect collection first, because effect selection through command-line arguments already exists and is stable enough for development testing.

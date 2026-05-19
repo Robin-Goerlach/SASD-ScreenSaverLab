@@ -58,7 +58,7 @@ DESCRIPTION
     visualizer playground for Windows.
 
     It provides a modular fullscreen host for original animated effects,
-    currently Star Drift, Data Stream, Light Trails and Amber Feed.
+    currently Star Drift, Data Stream, Light Trails, Amber Feed, Wireframe Terrain, Plasma Grid and Orbit Field.
 
 OPTIONS
     /help, /?, -h, --help
@@ -88,6 +88,9 @@ OPTIONS
             data-stream
             light-trails
             amber-feed
+            wireframe-terrain
+            plasma-grid
+            orbit-field
 
     /star
         Shortcut for /effect:star-drift.
@@ -100,6 +103,15 @@ OPTIONS
 
     /amber, /feed
         Shortcuts for /effect:amber-feed.
+
+    /wire, /terrain
+        Shortcuts for /effect:wireframe-terrain.
+
+    /plasma, /grid
+        Shortcuts for /effect:plasma-grid.
+
+    /orbit, /field
+        Shortcuts for /effect:orbit-field.
 
     /clock, /clock:on, /clock:true, /show-clock
         Show the clock/date/effect-name overlay. This is the default.
@@ -139,10 +151,19 @@ EFFECTS
         Soft glowing light trails moving across a calm visualizer field.
 
     amber-feed
-        Amber retro terminal feed display. V0.4.5 loads configured RSS/Atom
+        Amber retro terminal feed display. V0.5.0 loads configured RSS/Atom
         sources, refreshes them in the background and falls back to cache or
         demo items when sources are unavailable. Reading speed is configured
         in config/feeds.json.
+
+    wireframe-terrain
+        1980s-inspired vector landscape with moving perspective grid lines.
+
+    plasma-grid
+        Colorful retro plasma field with a restrained technical grid overlay.
+
+    orbit-field
+        Scientific particle-orbit effect with soft attractor field lines.
 
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
@@ -157,6 +178,12 @@ EXAMPLES
 
     Sasd.ScreenSaverLab.App.exe /amber /feeds:config/feeds.json /no-clock
 
+    Sasd.ScreenSaverLab.App.exe /terrain /no-clock
+
+    Sasd.ScreenSaverLab.App.exe /plasma /no-clock
+
+    Sasd.ScreenSaverLab.App.exe /orbit /no-clock
+
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
     Sasd.ScreenSaverLab.App.exe /stream /no-clock /keep-display-awake
@@ -166,7 +193,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.4.5
+    0.5.0
 
 AUTHOR
     SASD - Scientific and Software Development
