@@ -227,6 +227,19 @@ public static class ScreenSaverCommandLineParser
             return true;
         }
 
+        if (argument is "light" or "lights" or "trail" or "trails" or "light-trail" or "light-trails" or "lighttrail"
+            or "effect:light" or "effect=light"
+            or "effect:lights" or "effect=lights"
+            or "effect:trail" or "effect=trail"
+            or "effect:trails" or "effect=trails"
+            or "effect:light-trail" or "effect=light-trail"
+            or "effect:light-trails" or "effect=light-trails"
+            or "effect:lighttrail" or "effect=lighttrail")
+        {
+            effectName = "light-trails";
+            return true;
+        }
+
         string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
 
         foreach (string prefix in prefixes)

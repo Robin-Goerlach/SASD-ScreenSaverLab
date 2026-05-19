@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.2.2 prototype**
+Version: **V0.3.0 prototype**
 
 Implemented:
 
@@ -17,6 +17,7 @@ Implemented:
 - Built-in effect selection via command-line arguments
 - `StarDriftEffect`
 - `DataStreamEffect`
+- `LightTrailsEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
@@ -90,10 +91,11 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.2.2 contains two built-in effects:
+V0.3.0 contains three built-in effects:
 
 - `star-drift`
 - `data-stream`
+- `light-trails`
 
 Useful examples:
 
@@ -107,6 +109,13 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 # Short aliases for Data Stream.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /data
+
+# Light Trails effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:light-trails
+
+# Short aliases for Light Trails.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /light
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /trails
 ```
 
 Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
@@ -197,7 +206,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.2.2 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.3.0 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

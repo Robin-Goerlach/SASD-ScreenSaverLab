@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.2.2 intentionally uses command-line configuration only. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.3.0 intentionally uses command-line configuration only. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -85,6 +85,17 @@ Supported effect arguments:
 /datastream
 /data-stream
 /cipherfall
+
+/effect:light-trails
+/effect=light-trails
+/effect:light-trail
+/effect=light-trail
+/light
+/lights
+/trail
+/trails
+/lighttrail
+/light-trails
 ```
 
 Examples:
@@ -94,7 +105,11 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:data-stream
 
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:light-trails
+
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /stream /no-clock
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /light /no-clock
 ```
 
 Unknown effect names currently fall back to `star-drift` instead of failing at startup.

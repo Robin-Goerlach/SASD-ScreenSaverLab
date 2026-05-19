@@ -46,6 +46,7 @@ The effects project owns visual implementations:
 
 - `StarDriftEffect`,
 - `DataStreamEffect`,
+- `LightTrailsEffect`,
 - `BuiltInScreenSaverEffects`.
 
 `BuiltInScreenSaverEffects` is a small built-in factory, not an external plugin loader.
@@ -82,13 +83,16 @@ The current options are:
 
 ## 5. Effect selection
 
-V0.2 adds command-line effect selection:
+V0.2 added command-line effect selection. V0.3 extends the built-in effect list:
 
 ```text
 /effect:star-drift
 /effect:data-stream
-/stream
+/effect:light-trails
 /star
+/stream
+/light
+/trails
 ```
 
 The parser stores the requested name in `ScreenSaverStartupOptions.EffectName`.
@@ -131,7 +135,8 @@ A later graphical configuration dialog should reuse the same concepts:
 
 - effect name,
 - clock overlay enabled/disabled,
-- monitor behavior.
+- monitor behavior,
+- power-management mode.
 
 A future persistent model might look like this:
 

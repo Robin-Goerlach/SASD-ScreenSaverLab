@@ -14,7 +14,7 @@ DESCRIPTION
     visualizer playground for Windows.
 
     It provides a modular fullscreen host for original animated effects,
-    currently Star Drift and Data Stream.
+    currently Star Drift, Data Stream and Light Trails.
 
 OPTIONS
     /help, /?, -h, --help
@@ -42,12 +42,16 @@ OPTIONS
         Available effects:
             star-drift
             data-stream
+            light-trails
 
     /star
         Shortcut for /effect:star-drift.
 
     /stream, /data
         Shortcuts for /effect:data-stream.
+
+    /light, /trails
+        Shortcuts for /effect:light-trails.
 
     /clock, /clock:on, /clock:true, /show-clock
         Show the clock/date/effect-name overlay. This is the default.
@@ -76,12 +80,17 @@ EFFECTS
     data-stream
         Falling technical glyph streams with an original SASD data-flow look.
 
+    light-trails
+        Soft glowing light trails moving across a calm visualizer field.
+
 EXAMPLES
     Sasd.ScreenSaverLab.App.exe /star /clock
 
     Sasd.ScreenSaverLab.App.exe /stream /no-clock
 
     Sasd.ScreenSaverLab.App.exe /all-screens /effect:data-stream
+
+    Sasd.ScreenSaverLab.App.exe /light /no-clock
 
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
@@ -92,7 +101,7 @@ NOTES
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.2.2
+    0.3.0
 
 AUTHOR
     SASD - Scientific and Software Development

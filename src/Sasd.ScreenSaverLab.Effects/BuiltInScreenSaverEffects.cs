@@ -30,6 +30,7 @@ public static class BuiltInScreenSaverEffects
         return normalized switch
         {
             "data-stream" or "datastream" or "data" or "stream" or "cipherfall" or "cipher" => new DataStreamEffect(),
+            "light-trails" or "lighttrail" or "light-trail" or "trails" or "trail" or "light" or "lights" => new LightTrailsEffect(),
             "star-drift" or "star" or "stars" => new StarDriftEffect(),
 
             // Unknown names intentionally fall back to the safe default. This prevents
@@ -43,7 +44,7 @@ public static class BuiltInScreenSaverEffects
     /// </summary>
     public static string GetSupportedEffectsText()
     {
-        return "star-drift, data-stream";
+        return "star-drift, data-stream, light-trails";
     }
 
     /// <summary>

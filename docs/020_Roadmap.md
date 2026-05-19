@@ -71,21 +71,25 @@ Implemented:
 - `PowerKeepAwakeService` wrapper around the Windows execution-state API
 - `docs/080_Power_Management.md`
 
+### V0.3 — Light Trails effect
+
+Implemented:
+
+- `LightTrailsEffect` with softly glowing moving trails
+- `/effect:light-trails`
+- `/light`, `/trails` and related aliases
+- command-line help and configuration documentation updated for three effects
+
 ## Next recommended versions
 
-### V0.2.3 — Small effect cleanup
+### V0.3.1 — Small effect cleanup
 
 Possible improvements:
 
 - tune Data Stream speed and density after testing on a real monitor
-- add a screenshot for Data Stream
+- tune Light Trails brightness, count and movement after testing on a real monitor
+- add screenshots for Data Stream and Light Trails
 - add parser tests once a test project exists
-
-### V0.3 — Light Trails effect
-
-Add a second more visual effect with glowing curves or moving light bands.
-
-The goal is to move beyond particle dots and text glyphs into a more visual screensaver style.
 
 ### V0.4 — Basic configuration dialog
 

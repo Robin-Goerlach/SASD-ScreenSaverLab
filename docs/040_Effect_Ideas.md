@@ -22,13 +22,17 @@ Purpose:
 - add an effect that looks immediately different from Star Drift,
 - keep the implementation readable and independent from external assets.
 
-## Recommended next effects
-
 ### Light Trails
 
-Moving glowing lines or bands with soft fading.
+A calm visualizer-style effect with glowing moving trails and soft fading.
 
-This would be a good V0.3 because it introduces a more visual, flowing screensaver style without requiring real 3D or shaders.
+Purpose:
+
+- introduce a more visual screensaver style beyond particles and glyphs,
+- keep the implementation simple enough for GDI+ and Windows Forms,
+- create a better base for later light-band, wave and visualizer experiments.
+
+## Recommended next effects
 
 ### Nebula Cloud
 
