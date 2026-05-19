@@ -7,8 +7,9 @@ namespace Sasd.ScreenSaverLab.Core;
 /// Windows commonly starts screensavers with arguments such as <c>/s</c>, <c>/c</c> or
 /// <c>/p HWND</c>. This parser also understands a few developer-friendly arguments for
 /// multi-monitor testing, for example <c>/screen:1</c>, <c>/primary</c> and
-/// <c>/all-screens</c>. V0.1.3 adds simple overlay configuration arguments such as
-/// <c>/no-clock</c> and <c>/clock:off</c>.
+/// <c>/all-screens</c>. V0.1.3 added simple overlay configuration arguments such as
+/// <c>/no-clock</c> and <c>/clock:off</c>. V0.2 adds built-in effect selection via
+/// <c>/effect:digital-rain</c> or short aliases such as <c>/rain</c>.
 /// </remarks>
 public static class ScreenSaverCommandLineParser
 {
@@ -31,6 +32,7 @@ public static class ScreenSaverCommandLineParser
         bool useAllScreens = false;
         bool usePrimaryScreen = false;
         bool showClockOverlay = true;
+        string effectName = "star-drift";
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -99,6 +101,12 @@ public static class ScreenSaverCommandLineParser
                 continue;
             }
 
+            if (TryParseEffectOption(current, out string parsedEffectName))
+            {
+                effectName = parsedEffectName;
+                continue;
+            }
+
             if (TryParseScreenIndex(current, out int parsedScreenIndex))
             {
                 targetScreenIndex = parsedScreenIndex;
@@ -115,7 +123,8 @@ public static class ScreenSaverCommandLineParser
             useMouseScreen,
             useAllScreens,
             usePrimaryScreen,
-            showClockOverlay);
+            showClockOverlay,
+            effectName);
     }
 
     /// <summary>
@@ -132,13 +141,6 @@ public static class ScreenSaverCommandLineParser
     /// <summary>
     /// Parses supported clock overlay argument formats.
     /// </summary>
-    /// <remarks>
-    /// Supported examples:
-    /// <list type="bullet">
-    /// <item><description><c>/clock</c>, <c>/show-clock</c>, <c>/clock:on</c>, <c>/clock=true</c></description></item>
-    /// <item><description><c>/no-clock</c>, <c>/hide-clock</c>, <c>/clock:off</c>, <c>/clock=false</c></description></item>
-    /// </list>
-    /// </remarks>
     private static bool TryParseClockOverlayOption(string argument, out bool showClockOverlay)
     {
         showClockOverlay = true;
@@ -174,12 +176,51 @@ public static class ScreenSaverCommandLineParser
     }
 
     /// <summary>
-    /// Parses supported screen-index argument formats.
+    /// Parses supported effect argument formats.
     /// </summary>
     /// <remarks>
-    /// Supported examples: <c>/screen:1</c>, <c>/screen=1</c>, <c>/monitor:1</c>,
-    /// <c>/display=1</c>. The index is zero-based.
+    /// The parser deliberately accepts friendly aliases, but it does not instantiate any
+    /// effect. Instantiation stays in the application/effects layer so the core project
+    /// does not need to reference the concrete effect implementations.
     /// </remarks>
+    private static bool TryParseEffectOption(string argument, out string effectName)
+    {
+        effectName = "star-drift";
+
+        if (argument is "star" or "stars" or "star-drift" or "effect:star" or "effect=star" or "effect:star-drift" or "effect=star-drift")
+        {
+            effectName = "star-drift";
+            return true;
+        }
+
+        if (argument is "rain" or "digital-rain" or "code-rain" or "matrix" or "effect:rain" or "effect=rain" or "effect:digital-rain" or "effect=digital-rain" or "effect:code-rain" or "effect=code-rain")
+        {
+            effectName = "digital-rain";
+            return true;
+        }
+
+        string[] prefixes = ["effect:", "effect=", "visual:", "visual="];
+
+        foreach (string prefix in prefixes)
+        {
+            if (argument.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                string value = argument[prefix.Length..].Trim();
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    effectName = value;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Parses supported screen-index argument formats.
+    /// </summary>
     private static bool TryParseScreenIndex(string argument, out int screenIndex)
     {
         screenIndex = 0;

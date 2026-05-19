@@ -1,106 +1,68 @@
 # SASD ScreenSaver Lab — Effect Ideas
 
-## 1. Star Drift
+## Implemented effects
 
-Status: V0.1 prototype.
+### Star Drift
 
-A calm particle field with a dark background, drifting stars, subtle glow, and an optional clock overlay.
+A dark, calm star-field with drifting particles and a small clock overlay.
 
-Good for:
+Purpose:
 
-- first render loop,
-- basic particle handling,
-- calm screensaver mode,
-- later speed and color settings.
+- prove the host/effect architecture,
+- provide a pleasant first screensaver,
+- keep V0.1 small and readable.
 
-## 2. Digital Rain
+### Digital Rain
 
-Falling characters, numbers, or symbols.
+A SASD code-rain effect with falling technical glyph streams.
 
-Possible SASD variant:
+Purpose:
 
-- digits,
-- hexadecimal values,
-- server names,
-- small SASD technical keywords,
-- log-like snippets.
+- prove that several effects can share the same interface,
+- add an effect that looks immediately different from Star Drift,
+- keep the implementation readable and independent from external assets.
 
-The goal is not to copy the Matrix effect exactly, but to create a technical-looking diagnostic rain effect.
+## Recommended next effects
 
-## 3. Light Sticks
+### Light Trails
 
-Moving light bars with soft glow and reflection.
+Moving glowing lines or bands with soft fading.
 
-This can be inspired by music visualizers but does not need audio analysis in the first version.
+This would be a good V0.3 because it introduces a more visual, flowing screensaver style without requiring real 3D or shaders.
 
-Possible features:
+### Nebula Cloud
 
-- slow horizontal movement,
-- vertical bars,
-- pseudo-floor reflection,
-- soft glow,
-- several palettes.
+A soft particle cloud with slow color movement and depth impression.
 
-## 4. Nebula Cloud
+This would be good after at least one more simpler effect is stable.
 
-A calm space/nebulous effect.
+### Flying SASD Objects
 
-Possible features:
+Small symbolic objects such as servers, disks, code brackets, or SASD cubes flying across the screen.
 
-- layered translucent particles,
-- slow drift,
-- depth impression,
-- soft color palettes,
-- occasional star bursts.
+This could be a playful alternative to historical object-based screensavers, without copying any protected original assets.
 
-## 5. Magnet Field
+### Magnet Field
 
-A more advanced particle system.
+A more advanced effect with particles orbiting around invisible force fields.
 
-Possible features:
+This should wait until the rendering loop and configuration model are stable.
 
-- rotating particle sphere,
-- magnetic field line impression,
-- attractors and repulsors,
-- density waves,
-- optional audio input later.
+## Deferred asset-heavy effects
 
-This should not be the first effect because it requires more math and rendering work.
+### Aquarium-like scene
 
-## 6. Flying SASD Objects
+Possible, but not recommended early.
 
-A friendly reference to classic flying-object screensavers, but with original assets.
+Reasons:
 
-Possible objects:
+- needs custom graphics or sprites,
+- believable movement is more complex,
+- visual quality depends strongly on assets,
+- easy to spend time without improving the core architecture.
 
-- small servers,
-- terminals,
-- floppy disks,
-- code windows,
-- coffee mugs,
-- SASD cubes,
-- rockets,
-- network packets.
+## Effect naming principles
 
-Important: use original graphics only.
+Effect names should be original and SASD-compatible.
 
-## 7. Aquarium-like calm scene
-
-A relaxing underwater effect.
-
-This is visually appealing but should be postponed because good-looking fish, movement, depth, plants, and bubbles require many assets and details.
-
-A future SASD version could use abstract geometric fish or original vector fish instead of realistic assets.
-
-## 8. Clock modes
-
-Clock overlays can become their own effect family.
-
-Possible variants:
-
-- large minimal clock,
-- retro terminal clock,
-- binary clock,
-- orbit clock,
-- world-clock view,
-- project/status clock for SASD office display.
+Avoid names that sound like direct copies of commercial screensavers or media franchises.

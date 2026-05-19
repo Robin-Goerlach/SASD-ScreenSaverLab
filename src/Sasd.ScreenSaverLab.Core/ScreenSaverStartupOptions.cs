@@ -23,6 +23,10 @@ namespace Sasd.ScreenSaverLab.Core;
 /// When true, the host draws the built-in clock/date/effect-name overlay. When false,
 /// only the visual effect itself is rendered.
 /// </param>
+/// <param name="EffectName">
+/// Gets the requested built-in effect name or alias. The application project resolves this
+/// value to an effect implementation through the built-in effect factory.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
@@ -30,7 +34,8 @@ public sealed record ScreenSaverStartupOptions(
     bool UseMouseScreen = true,
     bool UseAllScreens = false,
     bool UsePrimaryScreen = false,
-    bool ShowClockOverlay = true)
+    bool ShowClockOverlay = true,
+    string EffectName = "star-drift")
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.

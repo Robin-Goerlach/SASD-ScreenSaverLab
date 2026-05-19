@@ -8,13 +8,15 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.1.3 prototype**
+Version: **V0.2 prototype**
 
 Implemented:
 
 - A small Windows Forms host application
 - A modular effect interface
-- First effect: `StarDriftEffect`
+- Built-in effect selection via command-line arguments
+- `StarDriftEffect`
+- `DigitalRainEffect`
 - Fullscreen mode
 - Multi-monitor-aware startup
 - Basic render loop
@@ -29,7 +31,6 @@ Not yet implemented:
 - Real `.scr` packaging
 - Configuration dialog
 - Windows preview mode for the screensaver settings panel
-- Multiple selectable effects
 - Friendly configuration UI for monitor, overlay and effect selection
 - Audio-reactive visualizer mode
 - Plugin loading from external assemblies
@@ -83,6 +84,28 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj
 
 The application currently starts in fullscreen mode. Press **Esc**, click the mouse, or move the mouse noticeably to close it.
 
+### Effect selection
+
+V0.2 contains two built-in effects:
+
+- `star-drift`
+- `digital-rain`
+
+Useful examples:
+
+```powershell
+# Default effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:star-drift
+
+# New V0.2 effect.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /effect:digital-rain
+
+# Short alias for Digital Rain.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /rain
+```
+
+Unknown effect names currently fall back to `StarDriftEffect` instead of crashing. A later configuration UI should show available effects explicitly.
+
 ### Multi-monitor startup
 
 V0.1.1 and newer no longer blindly maximize on the Windows primary monitor. In normal development mode the application starts on the monitor that currently contains the mouse pointer.
@@ -98,13 +121,16 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 # Start one fullscreen window on every connected monitor.
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens
+
+# Digital Rain on all monitors without clock overlay.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /effect:digital-rain /no-clock
 ```
 
 For the later real Windows screensaver mode (`/s`), the application is prepared to cover all connected monitors.
 
 ### Clock overlay
 
-V0.1.3 can show or hide the built-in clock/date/effect-name overlay via command-line arguments. The overlay is enabled by default.
+V0.1.3 and newer can show or hide the built-in clock/date/effect-name overlay via command-line arguments. The overlay is enabled by default.
 
 Useful examples:
 
@@ -120,13 +146,13 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /clock:off
 ```
 
-The current implementation keeps this deliberately simple. A graphical settings dialog can later write the same option into a persistent configuration file.
+The current implementation keeps this deliberately simple. A graphical settings dialog can later write the same options into a persistent configuration file.
 
 ## Design principle
 
-V0.1 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, but external plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.2 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
-This keeps the first version small, understandable, and robust.
+This keeps the first versions small, understandable, and robust.
 
 ## Repository notes
 

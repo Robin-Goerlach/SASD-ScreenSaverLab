@@ -1,50 +1,56 @@
 # SASD ScreenSaver Lab — Technical Design
 
-## 1. Architecture overview
+## 1. Purpose
 
-The first version uses a deliberately simple architecture.
+The technical design should keep the application small enough to understand while still allowing several visual effects to share the same host.
+
+The project is not yet a plugin platform. For now it is a modular Windows Forms application with built-in effects.
+
+## 2. Solution structure
 
 ```text
-Sasd.ScreenSaverLab.App
-  Windows Forms host application
-  Fullscreen window per selected monitor
-  Multi-monitor screen selection
-  Render loop
-  Input handling
-  Optional clock overlay
-
-Sasd.ScreenSaverLab.Core
-  Shared interfaces and runtime helpers
-  Effect contract
-  Command-line parsing
-  Startup options, including overlay settings
-
-Sasd.ScreenSaverLab.Effects
-  Built-in visual effects
-  StarDriftEffect
+src/
+  Sasd.ScreenSaverLab.App/
+  Sasd.ScreenSaverLab.Core/
+  Sasd.ScreenSaverLab.Effects/
 ```
-
-## 2. Main responsibility split
 
 ### App project
 
-The app project owns the Windows-specific behavior:
+The app project owns Windows Forms startup behavior:
 
-- create one fullscreen form for the selected monitor or monitors,
-- place fullscreen forms explicitly on `Screen.Bounds`,
-- hide the cursor,
-- react to keyboard and mouse input,
-- run a timer-based animation loop,
-- call the currently selected effect,
-- draw optional overlays, including the currently configurable clock/date overlay.
-
-The app project should not contain the actual animation logic of each effect.
+- application entry point,
+- screen selection,
+- fullscreen host forms,
+- Windows mode handling,
+- message boxes for currently unsupported configure/preview modes.
 
 ### Core project
 
-The core project defines the shared contract.
+The core project owns abstractions and simple shared models:
 
-The most important interface is:
+- `IScreenSaverEffect`,
+- `IEffectClock`,
+- `SystemEffectClock`,
+- `ScreenSaverStartupOptions`,
+- `ScreenSaverCommandLineParser`,
+- `ScreenSaverMode`.
+
+The core project does not instantiate concrete effects.
+
+### Effects project
+
+The effects project owns visual implementations:
+
+- `StarDriftEffect`,
+- `DigitalRainEffect`,
+- `BuiltInScreenSaverEffects`.
+
+`BuiltInScreenSaverEffects` is a small built-in factory, not an external plugin loader.
+
+## 3. Effect lifecycle
+
+Every effect implements:
 
 ```csharp
 public interface IScreenSaverEffect
@@ -57,113 +63,70 @@ public interface IScreenSaverEffect
 }
 ```
 
-This is intentionally small. It is easy to understand and sufficient for early effects.
+The host form is responsible for the timer and paint cycle. The effect is responsible for its own animation state.
 
-### Effects project
+## 4. Multi-monitor behavior
 
-The effects project contains built-in visual effects.
+The application uses explicit `Screen.Bounds` placement instead of relying on `WindowState = Maximized`.
 
-Each effect should:
+This is important because Windows Forms may otherwise maximize a window on the primary monitor even when another monitor was intended.
 
-- implement `IScreenSaverEffect`,
-- own its own animation state,
-- avoid touching the host form directly,
-- be understandable as a separate module.
+The current options are:
 
-## 3. Render loop
+- monitor under mouse pointer,
+- primary monitor,
+- zero-based screen index,
+- all connected screens.
 
-The host uses a timer to invalidate the form regularly.
+## 5. Effect selection
 
-On each tick:
+V0.2 adds command-line effect selection:
 
-1. measure elapsed time,
-2. update the active effect,
-3. request repaint.
+```text
+/effect:star-drift
+/effect:digital-rain
+/rain
+/star
+```
 
-During repaint:
+The parser stores the requested name in `ScreenSaverStartupOptions.EffectName`.
 
-1. clear the background,
-2. render the active effect,
-3. draw optional overlay elements if enabled.
+The app then creates one independent effect instance per screen through:
 
-This is not a high-end game loop, but it is sufficient for V0.1 and easy to understand.
+```csharp
+BuiltInScreenSaverEffects.Create(options.EffectName)
+```
 
-## 4. Why Windows Forms first?
+This keeps the parser independent from the concrete effect classes.
 
-Windows Forms is a pragmatic choice for V0.1 because:
+## 6. Configuration approach
 
-- it is simple,
-- it works well in Visual Studio,
-- it is sufficient for 2D effects,
-- it can later be compiled as a `.scr` application,
-- it fits the user's current C# desktop development path.
+The current version uses command-line configuration only.
 
-Potential future alternatives:
+A later graphical configuration dialog should reuse the same concepts:
 
-- WPF for richer UI and effects,
-- SkiaSharp for better 2D rendering,
-- OpenTK/Silk.NET for OpenGL-style visualizers,
-- WebView2 for HTML Canvas/WebGL effects.
+- effect name,
+- clock overlay enabled/disabled,
+- monitor behavior.
 
-## 5. Why no plugin system yet?
+A future persistent model might look like this:
 
-A real plugin system requires decisions about:
+```csharp
+public sealed record ScreenSaverSettings(
+    string EffectName,
+    bool ShowClockOverlay,
+    string MonitorMode);
+```
 
-- assembly loading,
-- versioning,
-- configuration,
-- sandboxing,
-- error isolation,
-- signing or trust,
-- compatibility between host and plugin API.
+## 7. Deliberately postponed architecture
 
-For V0.1 this would add complexity without making the visible result better.
+The following are intentionally postponed:
 
-The project therefore uses built-in effects first. The code is modular enough that a plugin system can be added later.
+- external plugin loading,
+- dependency injection container,
+- complex rendering engine,
+- settings persistence,
+- installer,
+- audio analysis.
 
-## 6. Exit behavior
-
-The prototype exits on:
-
-- `Esc`,
-- any key press,
-- mouse button click,
-- noticeable mouse movement after startup.
-
-A small movement threshold prevents accidental closing immediately after the cursor is hidden.
-
-## 7. Multi-monitor behavior
-
-V0.1 originally used `WindowState = Maximized`, which tends to place the form on the primary Windows monitor. V0.1.1 changed the host so that each `ScreenSaverForm` receives a concrete `Screen` and applies that screen's `Bounds` manually.
-
-The startup behavior is:
-
-- normal developer run: use the monitor under the mouse pointer,
-- `/screen:N`: use the selected zero-based screen index,
-- `/all-screens`: open one fullscreen form per connected monitor,
-- `/s`: prepared to cover all connected monitors for real screensaver mode.
-
-A small `ScreenSaverApplicationContext` manages several forms and closes all screensaver windows when the user exits from any monitor.
-
-## 8. Overlay configuration
-
-V0.1.3 keeps configuration intentionally lightweight. The clock/date/effect-name overlay is controlled by `ScreenSaverStartupOptions.ShowClockOverlay`. The command-line parser understands arguments such as:
-
-- `/clock`
-- `/show-clock`
-- `/no-clock`
-- `/hide-clock`
-- `/clock:on`
-- `/clock:off`
-
-The fullscreen form receives this boolean option from `ScreenSaverApplicationContext` and simply skips `DrawOverlay()` when the overlay is disabled. This keeps the visual effect classes independent from host-level UI decisions.
-
-A later settings dialog should not duplicate overlay logic. It should write persistent settings and let startup code populate the same `ScreenSaverStartupOptions` model.
-
-## 9. Known technical limitations
-
-- The render loop is timer-based, not a dedicated high-precision game loop.
-- `System.Drawing` / GDI+ is sufficient for V0.1, but not ideal for advanced particle effects.
-- The current version has command-line options but no persistent settings file yet.
-- The project has not yet been converted into a real `.scr` screensaver file.
-- Windows preview mode is parsed but not yet rendered inside the preview handle.
+The project should first become a small, stable, visually useful screensaver lab.

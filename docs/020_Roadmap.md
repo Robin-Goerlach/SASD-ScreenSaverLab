@@ -1,112 +1,113 @@
 # SASD ScreenSaver Lab — Roadmap
 
-## V0.1 — Technical Shell and Star Drift
+## Guiding idea
 
-Goal: create the smallest useful version.
+The project should grow in small visible increments. Every version should add either a visible effect, a useful host capability, or a necessary Windows screensaver feature.
 
-Scope:
+## Completed milestones
 
-- Solution and project structure
+### V0.1 — Initial Star Drift prototype
+
+Implemented:
+
 - Windows Forms fullscreen host
-- Basic render loop
-- `IScreenSaverEffect` interface
+- modular `IScreenSaverEffect` interface
 - `StarDriftEffect`
-- Clock/date overlay
-- Exit behavior for Esc, mouse click, and noticeable mouse movement
+- basic render loop
+- clock/date/effect-name overlay
+- exit by keyboard, mouse click, or noticeable mouse movement
 
-Status: initial prototype.
+### V0.1.1 — Multi-monitor startup correction
 
-## V0.2 — Digital Rain
+Implemented:
 
-Goal: add a second clearly different effect.
+- explicit monitor bounds instead of blind maximize
+- monitor under mouse pointer by default
+- `/screen:N`, `/primary`, `/mouse` and `/all-screens`
+- one host window per monitor for all-screen mode
 
-Possible scope:
+### V0.1.2 — Repository-ready polish
+
+Implemented:
+
+- screenshot path for GitHub README
+- GitHub Actions build workflow
+- repository setup documentation
+
+### V0.1.3 — Configurable clock overlay
+
+Implemented:
+
+- `/clock`, `/no-clock`, `/clock:on`, `/clock:off`
+- `ShowClockOverlay` startup option
+- configuration documentation
+
+### V0.2 — Digital Rain and built-in effect selection
+
+Implemented:
 
 - `DigitalRainEffect`
-- Falling numbers, symbols, or SASD-themed glyphs
-- Configurable density and speed later
-- Effect selection in code first, UI later
+- `BuiltInScreenSaverEffects` factory
+- `EffectName` startup option
+- `/effect:star-drift`, `/effect:digital-rain`, `/rain` and related aliases
 
-## V0.3 — Light Sticks
+## Next recommended versions
 
-Goal: create a more iTunes-visualizer-like effect without audio analysis.
+### V0.2.1 — Small effect cleanup
 
-Possible scope:
+Possible improvements:
 
-- Moving light bars
-- Reflection or pseudo-floor effect
-- Smooth color transitions
-- Soft glow
+- tune Digital Rain speed and density after testing on a real monitor
+- add a screenshot for Digital Rain
+- add parser tests once a test project exists
 
-## V0.4 — Configuration Basics
+### V0.3 — Light Trails effect
 
-Goal: make the prototype easier to use.
+Add a second more visual effect with glowing curves or moving light bands.
 
-Possible scope:
+The goal is to move beyond particle dots and text glyphs into a more visual screensaver style.
 
-- Simple settings dialog
-- Select effect
-- Toggle clock overlay
-- Set speed factor
-- Set particle count
-- Store settings in a simple JSON file
+### V0.4 — Basic configuration dialog
 
-## V0.5 — Windows Screensaver Mode
+Add a simple Windows Forms dialog for:
 
-Goal: behave more like a real Windows screensaver.
+- selecting the built-in effect
+- showing/hiding the clock overlay
+- choosing monitor behavior
 
-Possible scope:
+The dialog does not need to be pretty at first. It should map to the existing options instead of inventing a second configuration model.
 
-- `.scr` packaging research
-- `/s` fullscreen argument
-- `/c` configuration argument
-- `/p <hwnd>` preview mode investigation
-- installer or manual setup instructions
+### V0.5 — Real Windows `.scr` packaging
 
-## V0.6 — Nebula Cloud
+Prepare the application so it can be copied or built as a Windows screensaver file.
 
-Goal: add a calm space/nebulous effect.
+Important topics:
 
-Possible scope:
+- `/s` fullscreen mode
+- `/c` configuration mode
+- `/p HWND` preview mode
+- installer or manual installation notes
 
-- Layered particles
-- Slow drift
-- Color palettes
-- Soft cloudy look
+### V1.0 — Small stable screensaver collection
 
-## V0.7 — Magnet Field
+A credible first release should include:
 
-Goal: create a more advanced showcase effect.
-
-Possible scope:
-
-- Pseudo-3D particle sphere
-- Field-line movement
-- Rotating camera impression
-- Optional audio-reactive mode later
-
-## V1.0 — Small Screensaver Collection
-
-Goal: publish a credible first public version.
-
-Expected content:
-
-- Several stable built-in effects
-- Basic configuration
-- Windows screensaver mode
-- Professional README
-- Screenshots or animated GIFs
-- Clear license
-- Known limitations
+- 3 to 5 built-in effects
+- stable multi-monitor behavior
+- configuration dialog
+- real screensaver packaging notes
+- clean README screenshots
+- basic automated build
 
 ## Deferred ideas
 
-The following ideas are intentionally postponed:
+The following ideas are intentionally deferred:
 
-- real external plugin system,
-- shader-based rendering,
-- OpenGL/DirectX backend,
-- audio analysis,
-- multi-monitor support beyond basic fullscreen,
-- effect marketplace or module installer,
-- advanced preview host.
+- external plugin loading
+- audio-reactive visualizer mode
+- advanced shader rendering
+- SkiaSharp/OpenGL backend
+- animated settings preview
+- asset-heavy aquarium-like effects
+
+These ideas are interesting, but they should not block a robust and understandable first version.
