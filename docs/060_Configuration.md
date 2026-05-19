@@ -2,7 +2,7 @@
 
 ## 1. Current configuration level
 
-V0.2.1 intentionally uses command-line configuration only. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
+V0.2.2 intentionally uses command-line configuration only. This keeps the prototype small and avoids building a settings dialog before the screensaver host and effects are stable.
 
 ## 2. Command-line help
 
@@ -25,7 +25,41 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 Because the application is currently a Windows Forms executable, help is written to the console when available and also shown in a Windows message box.
 
-## 3. Effect selection
+## 3. Power management
+
+The default behavior is:
+
+```text
+/allow-sleep
+```
+
+This means the application does not prevent Windows from entering sleep mode or turning off the display according to the active power plan.
+
+Optional keep-awake arguments:
+
+```text
+/keep-awake
+/keep-system-awake
+/stay-awake
+/no-sleep
+
+/keep-display-awake
+/keep-screen-awake
+/display-awake
+/screen-awake
+```
+
+Examples:
+
+```powershell
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream /keep-awake
+
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream /no-clock /keep-display-awake
+```
+
+The implementation uses Windows `SetThreadExecutionState` and deliberately avoids simulated mouse movement.
+
+## 4. Effect selection
 
 The default effect is:
 
@@ -65,7 +99,7 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 
 Unknown effect names currently fall back to `star-drift` instead of failing at startup.
 
-## 4. Clock overlay
+## 5. Clock overlay
 
 The clock overlay is enabled by default. It currently contains:
 
@@ -103,7 +137,7 @@ dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj 
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /all-screens /effect:data-stream /no-clock
 ```
 
-## 5. Later settings dialog
+## 6. Later settings dialog
 
 A later graphical settings dialog should reuse the same concepts instead of introducing a second configuration path. A likely next step would be a small configuration model such as:
 
@@ -111,7 +145,8 @@ A later graphical settings dialog should reuse the same concepts instead of intr
 public sealed record ScreenSaverSettings(
     string EffectName,
     bool ShowClockOverlay,
-    string MonitorMode);
+    string MonitorMode,
+    string PowerManagementMode);
 ```
 
 The settings could later be stored as JSON in the user's application data directory.

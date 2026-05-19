@@ -7,8 +7,8 @@ namespace Sasd.ScreenSaverLab.Core;
 /// Windows commonly starts screensavers with arguments such as <c>/s</c>, <c>/c</c> or
 /// <c>/p HWND</c>. This parser also understands developer-friendly arguments for
 /// multi-monitor testing, for example <c>/screen:1</c>, <c>/primary</c> and
-/// <c>/all-screens</c>. It also supports overlay configuration, built-in effect selection
-/// and a manpage-like <c>/help</c> output.
+/// <c>/all-screens</c>. It also supports overlay configuration, built-in effect selection,
+/// optional power-management behavior and a manpage-like <c>/help</c> output.
 /// </remarks>
 public static class ScreenSaverCommandLineParser
 {
@@ -33,6 +33,7 @@ public static class ScreenSaverCommandLineParser
         bool showClockOverlay = true;
         string effectName = "star-drift";
         bool showHelp = false;
+        PowerManagementMode powerManagementMode = PowerManagementMode.AllowSleep;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -113,6 +114,12 @@ public static class ScreenSaverCommandLineParser
                 continue;
             }
 
+            if (TryParsePowerManagementOption(current, out PowerManagementMode parsedPowerManagementMode))
+            {
+                powerManagementMode = parsedPowerManagementMode;
+                continue;
+            }
+
             if (TryParseScreenIndex(current, out int parsedScreenIndex))
             {
                 targetScreenIndex = parsedScreenIndex;
@@ -131,7 +138,8 @@ public static class ScreenSaverCommandLineParser
             usePrimaryScreen,
             showClockOverlay,
             effectName,
-            showHelp);
+            showHelp,
+            powerManagementMode);
     }
 
     /// <summary>
@@ -233,6 +241,42 @@ public static class ScreenSaverCommandLineParser
                     return true;
                 }
             }
+        }
+
+        return false;
+    }
+
+
+    /// <summary>
+    /// Parses supported Windows power-management argument formats.
+    /// </summary>
+    /// <remarks>
+    /// The default intentionally remains <see cref="PowerManagementMode.AllowSleep" />.
+    /// Keep-awake behavior is opt-in because a screensaver should not silently override
+    /// the user's Windows power plan.
+    /// </remarks>
+    private static bool TryParsePowerManagementOption(string argument, out PowerManagementMode mode)
+    {
+        mode = PowerManagementMode.AllowSleep;
+
+        if (argument is "allow-sleep" or "sleep" or "respect-power-plan" or "power:allow-sleep" or "power=allow-sleep")
+        {
+            mode = PowerManagementMode.AllowSleep;
+            return true;
+        }
+
+        if (argument is "keep-awake" or "keep-system-awake" or "stay-awake" or "nosleep" or "no-sleep"
+            or "power:keep-awake" or "power=keep-awake" or "power:system" or "power=system")
+        {
+            mode = PowerManagementMode.KeepSystemAwake;
+            return true;
+        }
+
+        if (argument is "keep-display-awake" or "keep-screen-awake" or "display-awake" or "screen-awake"
+            or "power:display" or "power=display" or "power:keep-display-awake" or "power=keep-display-awake")
+        {
+            mode = PowerManagementMode.KeepSystemAndDisplayAwake;
+            return true;
         }
 
         return false;

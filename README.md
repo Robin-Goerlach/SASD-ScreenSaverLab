@@ -8,7 +8,7 @@ The goal is not to copy existing Apple, iTunes, After Dark, or other historic sc
 
 ## Current status
 
-Version: **V0.2.1 prototype**
+Version: **V0.2.2 prototype**
 
 Implemented:
 
@@ -24,6 +24,7 @@ Implemented:
 - Configurable clock overlay via command-line arguments
 - Repository-ready README with screenshot
 - Manpage-like `/help` command-line reference
+- Optional power-management modes for keeping the system and/or display awake
 - Initial GitHub Actions build workflow
 - Initial project documentation
 
@@ -60,6 +61,7 @@ SASD-ScreenSaverLab/
     050_GitHub_Repository_Setup.md
     060_Configuration.md
     070_Command_Line_Reference.md
+    080_Power_Management.md
     screenshots/
       sasd-screensaverlab-star-drift.png
   src/
@@ -88,7 +90,7 @@ The application currently starts in fullscreen mode. Press **Esc**, click the mo
 
 ### Effect selection
 
-V0.2.1 contains two built-in effects:
+V0.2.2 contains two built-in effects:
 
 - `star-drift`
 - `data-stream`
@@ -133,7 +135,7 @@ For the later real Windows screensaver mode (`/s`), the application is prepared 
 
 ### Command-line help
 
-V0.2.1 adds a short manpage-like command-line reference.
+V0.2.1 and newer include a short manpage-like command-line reference.
 
 ```powershell
 dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /help
@@ -151,6 +153,27 @@ Supported help aliases:
 ```
 
 See [`docs/070_Command_Line_Reference.md`](docs/070_Command_Line_Reference.md) for the same information in Markdown form.
+
+### Power management
+
+V0.2.2 adds optional keep-awake modes. The default behavior is intentionally conservative: SASD ScreenSaver Lab respects the active Windows power plan and does not prevent sleep unless explicitly requested.
+
+Useful examples:
+
+```powershell
+# Default behavior: Windows power plan remains in control.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /allow-sleep
+
+# Keep the PC awake while the screensaver is running.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream /keep-awake
+
+# Keep both PC and display awake, useful for demos or dashboards.
+dotnet run --project src/Sasd.ScreenSaverLab.App/Sasd.ScreenSaverLab.App.csproj -- /stream /no-clock /keep-display-awake
+```
+
+The implementation uses the official Windows `SetThreadExecutionState` API instead of moving the mouse artificially.
+
+See [`docs/080_Power_Management.md`](docs/080_Power_Management.md) for details.
 
 ### Clock overlay
 
@@ -174,7 +197,7 @@ The current implementation keeps this deliberately simple. A graphical settings 
 
 ## Design principle
 
-V0.2.1 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
+V0.2.2 deliberately avoids a heavy plugin architecture. Effects are modular inside the solution, and a small built-in effect factory selects them by name. External plugin loading is postponed until there are several real effects and a clearer need for it.
 
 This keeps the first versions small, understandable, and robust.
 

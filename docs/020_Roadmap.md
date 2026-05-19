@@ -60,9 +60,20 @@ Implemented:
 - `docs/070_Command_Line_Reference.md`
 - renamed the second effect concept to Data Stream to avoid misleading expectations and avoid close imitation of known film visuals
 
+### V0.2.2 — Optional power-management modes
+
+Implemented:
+
+- `/allow-sleep` as the explicit default behavior
+- `/keep-awake` to request that Windows keeps the system awake
+- `/keep-display-awake` to request that Windows keeps both system and display awake
+- `PowerManagementMode` startup option
+- `PowerKeepAwakeService` wrapper around the Windows execution-state API
+- `docs/080_Power_Management.md`
+
 ## Next recommended versions
 
-### V0.2.2 — Small effect cleanup
+### V0.2.3 — Small effect cleanup
 
 Possible improvements:
 

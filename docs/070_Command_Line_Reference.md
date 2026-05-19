@@ -55,6 +55,20 @@ OPTIONS
     /no-clock, /clock:off, /clock:false, /hide-clock
         Hide the clock/date/effect-name overlay.
 
+POWER MANAGEMENT
+    /allow-sleep
+        Do not prevent Windows from entering sleep mode or turning off the
+        display. This is the default and respects the active Windows power plan.
+
+    /keep-awake
+        Request that Windows keeps the system awake while the screensaver is
+        running. The display may still turn off depending on the power plan.
+
+    /keep-display-awake
+        Request that Windows keeps both the system and the display awake while
+        the screensaver is running. Useful for demos, dashboards, showrooms and
+        kiosk-like display scenarios.
+
 EFFECTS
     star-drift
         Calm particle field with subtle depth impression.
@@ -71,12 +85,14 @@ EXAMPLES
 
     Sasd.ScreenSaverLab.App.exe /screen:1 /effect:star-drift /clock
 
+    Sasd.ScreenSaverLab.App.exe /stream /no-clock /keep-display-awake
+
 NOTES
     This project is currently a prototype. It starts as a normal Windows
     application and will later support proper .scr screensaver behavior.
 
 VERSION
-    0.2.1
+    0.2.2
 
 AUTHOR
     SASD - Scientific and Software Development

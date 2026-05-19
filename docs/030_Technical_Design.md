@@ -23,6 +23,7 @@ The app project owns Windows Forms startup behavior:
 - screen selection,
 - fullscreen host forms,
 - Windows mode handling,
+- optional Windows power-management keep-awake behavior,
 - message boxes for currently unsupported configure/preview modes.
 
 ### Core project
@@ -34,7 +35,8 @@ The core project owns abstractions and simple shared models:
 - `SystemEffectClock`,
 - `ScreenSaverStartupOptions`,
 - `ScreenSaverCommandLineParser`,
-- `ScreenSaverMode`.
+- `ScreenSaverMode`,
+- `PowerManagementMode`.
 
 The core project does not instantiate concrete effects.
 
@@ -99,7 +101,29 @@ BuiltInScreenSaverEffects.Create(options.EffectName)
 
 This keeps the parser independent from the concrete effect classes.
 
-## 6. Configuration approach
+## 6. Power management
+
+V0.2.2 adds optional keep-awake behavior through the Windows execution-state API.
+
+Supported command-line modes:
+
+```text
+/allow-sleep
+/keep-awake
+/keep-display-awake
+```
+
+The default is `/allow-sleep`. This is intentional: a screensaver should not silently override the user's Windows power plan.
+
+The app project owns the platform-specific implementation:
+
+```text
+src/Sasd.ScreenSaverLab.App/Power/PowerKeepAwakeService.cs
+```
+
+The core project only stores the selected `PowerManagementMode` in `ScreenSaverStartupOptions`.
+
+## 7. Configuration approach
 
 The current version uses command-line configuration only.
 
@@ -115,10 +139,11 @@ A future persistent model might look like this:
 public sealed record ScreenSaverSettings(
     string EffectName,
     bool ShowClockOverlay,
-    string MonitorMode);
+    string MonitorMode,
+    string PowerManagementMode);
 ```
 
-## 7. Deliberately postponed architecture
+## 8. Deliberately postponed architecture
 
 The following are intentionally postponed:
 

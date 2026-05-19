@@ -31,6 +31,11 @@ namespace Sasd.ScreenSaverLab.Core;
 /// When true, the application prints/displays the command-line help and exits without
 /// starting a screensaver window.
 /// </param>
+/// <param name="PowerManagementMode">
+/// Controls whether the application asks Windows to keep the system and/or display
+/// awake while the screensaver host is running. The default respects the active
+/// Windows power plan.
+/// </param>
 public sealed record ScreenSaverStartupOptions(
     ScreenSaverMode Mode,
     nint? PreviewWindowHandle = null,
@@ -40,7 +45,8 @@ public sealed record ScreenSaverStartupOptions(
     bool UsePrimaryScreen = false,
     bool ShowClockOverlay = true,
     string EffectName = "star-drift",
-    bool ShowHelp = false)
+    bool ShowHelp = false,
+    PowerManagementMode PowerManagementMode = PowerManagementMode.AllowSleep)
 {
     /// <summary>
     /// Gets default options for a normal fullscreen development run.
